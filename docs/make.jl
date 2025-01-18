@@ -36,7 +36,7 @@ makedocs(;
 )
 
 deploydocs(;
-  repo = "github.com/barrettp/Astrometry.jl.git",
+  repo = "github.com/barrettp/Astrometry.jl/docs",
   devbranch = "main",
   push_preview=true
 )
