@@ -1,2 +1,2 @@
-abstract type TimeScale
+abstract type TimeScale end
 
