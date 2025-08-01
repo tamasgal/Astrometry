@@ -5,18 +5,18 @@ const ψ_2000B_planet = -0.135
 const ϵ_2000B_planet =  0.388
 
 # Mean anomaly of the Sun in 0.1 μas
-const l1_2000B = [1287104.79305, 129596581.0481]
+const l1_2000B = (1287104.79305, 129596581.0481)
 # Mean elongation of the Moon from the Sun in 0.1 μas
-const D_2000B = [1072260.70369, 1602961601.2090]
+const D_2000B = (1072260.70369, 1602961601.2090)
 # Mean anomaly of the Moon in 0.1 μas
-const l0_2000B = [485868.249036, 1717915923.2178]
+const l0_2000B = (485868.249036, 1717915923.2178)
 # Mean argument of the latitude of the Moon in 0.1 μas
-const F_2000B = [335779.526232, 1739527262.8478]
+const F_2000B = (335779.526232, 1739527262.8478)
 # Mean longitude of the ascending node of the Moon in 0.1 μas
-const Ω_2000B = [450160.398036, -6962890.5431]
+const Ω_2000B = (450160.398036, -6962890.5431)
 
 # Possibly iau_2000B_lunisolar_nutation_series = iau_2000a_lunisolar_nutation_series[1:77]
-const iau_2000B_nutation_lunisolar_series = [
+const iau_2000B_nutation_lunisolar_series = (
     #  1-10
     PeriodicTerms([ 0, 0, 0, 0,1],[-172064161.0, -174666.0, 33386.0, 92052331.0, 9086.0, 15377.0]),
     PeriodicTerms([ 0, 0, 2,-2,2],[-13170906.0, -1675.0, -13696.0, 5730336.0, -3015.0, -4587.0]),
@@ -101,4 +101,4 @@ const iau_2000B_nutation_lunisolar_series = [
     PeriodicTerms([ 1, 0, 2, 2,1],[  -1331.0,    0.0,    8.0,    663.0,   0.0,   4.0]),
     PeriodicTerms([-2, 0, 2, 2,2],[   1383.0,    0.0,   -2.0,   -594.0,   0.0,  -2.0]),
     PeriodicTerms([-1, 0, 0, 0,2],[   1405.0,    0.0,    4.0,   -610.0,   0.0,   2.0]),
-    PeriodicTerms([ 1, 1, 2,-2,2],[   1290.0,    0.0,    0.0,   -556.0,   0.0,   0.0])]
+    PeriodicTerms([ 1, 1, 2,-2,2],[   1290.0,    0.0,    0.0,   -556.0,   0.0,   0.0]))

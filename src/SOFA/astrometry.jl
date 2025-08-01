@@ -128,8 +128,8 @@ transformation chain.
 4) The context structure astrom produced by this function is used by
    eraAtciq* and eraAticq*.
 """
-function apcg(day1::Float64, day2::Float64, ebpv::Vector{Vector{Float64}},
-              ehp::Vector{Float64})
+function apcg(day1::Float64, day2::Float64, ebpv,
+              ehp)
     #  Compute the star-independent astrometry parameters.
     apcs(day1, day2, [zeros(Float64,3), zeros(Float64,3)], ebpv, ehp)
 end
@@ -313,8 +313,8 @@ the astrometric transformation chain.
 5) The context structure astrom produced by this function is used by
    atciq and aticq.
 """
-function apci(day1::Float64, day2::Float64, ebpv::Vector{Vector{Float64}},
-              ehp::Vector{Float64}, x::Float64, y::Float64, s::Float64)
+function apci(day1::Float64, day2::Float64, ebpv,
+              ehp, x::Float64, y::Float64, s::Float64)
     #  Star-independent astrometry parameters for geocenter and CIO based
     #  bias-precession-nutation matrix.
     p = apcg(day1, day2, ebpv, ehp)
@@ -544,8 +544,8 @@ coordinates.
 9) The context structure astrom produced by this function is used by
    eraAtioq, eraAtoiq, eraAtciq* and eraAticq*.
 """
-function apco(day1::Float64, day2::Float64, ebpv::Vector{Vector{Float64}},
-              ehp::Vector{Float64}, x::Float64, y::Float64, s::Float64,
+function apco(day1::Float64, day2::Float64, ebpv,
+              ehp, x::Float64, y::Float64, s::Float64,
               θ::Float64, elong::Float64, ϕ::Float64, hm::Float64,
               xp::Float64, yp::Float64, sp::Float64, refa::Float64,
               refb::Float64)
@@ -826,8 +826,8 @@ astrometric transformation chain.
 6) The context structure astrom produced by this function is used by
    Atciq and Aticq.
 """
-function apcs(day1::Float64, day2::Float64, pv::Vector{Vector{Float64}},
-              ebpv::Vector{Vector{Float64}}, ehp::Vector{Float64})
+function apcs(day1::Float64, day2::Float64, pv,
+              ebpv, ehp::AbstractVector{Float64})
     # Time since reference epoch, years (for proper motion calculation).
     pmt = ((day1 - JD2000) + day2)/DAYPERYEAR
     # Barycentric position of observer (AU).
@@ -928,7 +928,7 @@ astrometric transformation chain.
 6) The context structure astrom produced by this function is used by
    eraAtciq* and eraAticq*.
 """
-function apcs13(day1::Float64, day2::Float64, pv::Vector{Vector{Float64}})
+function apcs13(day1::Float64, day2::Float64, pv)
     #  Earth barycentric and heliocentric position & velocity (AU, AU/day).
     ehpv, ebpv = epv00(day1, day2)
     #  Compute the star-independent astrometry parameters.
@@ -2721,8 +2721,8 @@ Astronomical Almanac, 3rd ed., University Science Books (2013).
 Klioner, Sergei A., "A practical relativistic model for micro-
 arcsecond astrometry in space", Astr. J. 125, 1580-1597 (2003).
 """
-function ld(bm::Float64, p::Vector{Float64}, q::Vector{Float64},
-            e::Vector{Float64}, em::Float64, dlim::Float64)
+function ld(bm::Float64, p::AbstractVector{Float64}, q::AbstractVector{Float64},
+            e::AbstractVector{Float64}, em::Float64, dlim::Float64)
     #  2*G*bm/(em*c^2*(q*(q+e))).
     #  Apply the deflection.
     p .+ SCHWARZRADIUS*bm/em/maximum((dot(q, (q.+e)), dlim)) .* pxp(p, pxp(e, q))

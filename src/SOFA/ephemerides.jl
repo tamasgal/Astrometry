@@ -420,21 +420,21 @@ function plan94(day1::Float64, day2::Float64, planet::Int)
     #  Compute the mean elements.
     μ = 0.35953620*Δt
 
-    a = Polynomial(a_1994[planet,:], :Δt)(Δt) + 1e-7 * 
-        (sum(a_cos_1994[planet,1:8].*cos.(p_1994[planet,1:8].*μ) .+
-             a_sin_1994[planet,1:8].*sin.(p_1994[planet,1:8].*μ)) + 
-         (a_cos_1994[planet,9]*cos(p_1994[planet,9]*μ) +
-          a_sin_1994[planet,9]*sin(p_1994[planet,9]*μ))*Δt)
-    λ = deg2rad(Polynomial([3600., 1., 1.].*λ_1994[planet,:], :Δt)(Δt)/3600.) + 1e-7 *
-        (sum(λ_cos_1994[planet,1:8].*cos.(q_1994[planet,1:8].*μ) .+
-             λ_sin_1994[planet,1:8].*sin.(q_1994[planet,1:8].*μ)) +
-         sum(λ_cos_1994[planet,9:10].*cos.(q_1994[planet,9:10].*μ) .+
-             λ_sin_1994[planet,9:10].*sin.(q_1994[planet,9:10].*μ))*Δt)
-    e = Polynomial(e_1994[planet,:], :Δt)(Δt)
-    p = rem2pi(deg2rad(Polynomial([3600., 1., 1.].*π_1994[planet,:], :Δt)(Δt)/3600.),
+    a = Polynomial(a_1994[planet], :Δt)(Δt) + 1e-7 *
+        (sum(a_cos_1994[planet][1:8].*cos.(p_1994[planet][1:8].*μ) .+
+             a_sin_1994[planet][1:8].*sin.(p_1994[planet][1:8].*μ)) +
+         (a_cos_1994[planet][9]*cos(p_1994[planet][9]*μ) +
+          a_sin_1994[planet][9]*sin(p_1994[planet][9]*μ))*Δt)
+    λ = deg2rad(Polynomial([3600., 1., 1.].*λ_1994[planet], :Δt)(Δt)/3600.) + 1e-7 *
+        (sum(λ_cos_1994[planet][1:8].*cos.(q_1994[planet][1:8].*μ) .+
+             λ_sin_1994[planet][1:8].*sin.(q_1994[planet][1:8].*μ)) +
+         sum(λ_cos_1994[planet][9:10].*cos.(q_1994[planet][9:10].*μ) .+
+             λ_sin_1994[planet][9:10].*sin.(q_1994[planet][9:10].*μ))*Δt)
+    e = Polynomial(e_1994[planet], :Δt)(Δt)
+    p = rem2pi(deg2rad(Polynomial([3600., 1., 1.].*π_1994[planet], :Δt)(Δt)/3600.),
                RoundToZero)
-    i = deg2rad(Polynomial([3600., 1., 1.].*i_1994[planet,:], :Δt)(Δt)/3600.)
-    ω = rem2pi(deg2rad(Polynomial([3600., 1., 1.].*ω_1994[planet,:], :Δt)(Δt)/3600.),
+    i = deg2rad(Polynomial([3600., 1., 1.].*i_1994[planet], :Δt)(Δt)/3600.)
+    ω = rem2pi(deg2rad(Polynomial([3600., 1., 1.].*ω_1994[planet], :Δt)(Δt)/3600.),
                RoundToZero)
 
     #  Iterative solution of Kepler's equation to get eccentric anomaly.

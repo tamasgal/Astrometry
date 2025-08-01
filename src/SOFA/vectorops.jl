@@ -722,7 +722,7 @@ Form the r-matrix corresponding to a given r-vector.
 3) The reference frame rotates clockwise as seen looking along the
    rotation vector from the origin.
 """
-function rv2m(w::Vector{Float64})
+function rv2m(w::AbstractVector{Float64})
     #  Euler angle (magnitude of rotation vector)
     ϕ = norm(w)
     #  Euler axis (direction of rotation vector), perhaps null
@@ -1102,7 +1102,7 @@ Convert a p-vector into modulus and unit vector.
 1) If p is null, the result is null.  Otherwise the result is a unit
    vector.
 """
-function pn(p::Vector{Float64})
+function pn(p::AbstractVector{Float64})
     NamedTuple{(:modulus, :unit)}
     (norm(p) == 0 ? (0., [0., 0., 0.]) : (norm(p), p./norm(p)))
 end

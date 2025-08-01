@@ -2,43 +2,43 @@
 
 #   Precession model constants (Lieske 1979)
 #   Polynomial constants for reference epoch J2000.0
-const ζT_1976 = [2306.2181,  1.39656, -0.000139]
-const θT_1976 = [2004.3109, -0.85330, -0.000217]
+const ζT_1976 = (2306.2181,  1.39656, -0.000139)
+const θT_1976 = (2004.3109, -0.85330, -0.000217)
 #   Polynomial constants for arbitrary epochs
 #   Mean equator of epoch
-const ζA_1976 = [ 0.30188, -0.000344, 0.017998]
+const ζA_1976 = ( 0.30188, -0.000344, 0.017998)
 #   Mean equator of date
-const zA_1976 = [ 1.09468,  0.000066, 0.018203]
+const zA_1976 = ( 1.09468,  0.000066, 0.018203)
 #   Difference between mean equator of epoch and date
-const θA_1976 = [-0.42665, -0.000217, -0.041833]
+const θA_1976 = (-0.42665, -0.000217, -0.041833)
 
 #   IAU 1980 model
 
 #   Initial obliquity of the ecliptic 
 const ϵ0_1980  = 84381.448
 #   Mean obliquity of the ecliptic (from SOFA)
-const ϵ_1980   = [ϵ0_1980, -46.8150, -0.00059, 0.001813]
+const ϵ_1980   = (ϵ0_1980, -46.8150, -0.00059, 0.001813)
 #   Mean longitude of the Sun minus mean longitude of Sun's perigee (from SOFA)
 const l1_1980t = 99.0
-const l1_1980  = [1287099.804, 1292581.224, -0.577, -0.012]
+const l1_1980  = (1287099.804, 1292581.224, -0.577, -0.012)
 #   Mean elogation of the Moon from the Sun (from SOFA)
 const D_1980t  = 1236.0
-const D_1980   = [1072261.307, 1105601.328, -6.891, 0.019]
+const D_1980   = (1072261.307, 1105601.328, -6.891, 0.019)
 #   Mean longitude of the Moon minus mean longitude of Moon's perigee (from SOFA)
 const l0_1980t = 1325.0
-const l0_1980  = [485866.733, 715922.633, 31.310, 0.064]
+const l0_1980  = (485866.733, 715922.633, 31.310, 0.064)
 #   Mean longitude of the Moon minus mean longitude of Moon's node (from SOFA)
 const F_1980t  = 1342.0
-const F_1980   = [335778.877, 295263.137, -13.257, 0.011]
+const F_1980   = (335778.877, 295263.137, -13.257, 0.011)
 #   Mean Longitude of the Moon ascending node on the ecliptic,
 #   measured from the mean equinox of date (from SOFA)
 const Ω_1980t  = -5.0
-const Ω_1980   = [450160.280, -482890.539, 7.455, 0.008]
+const Ω_1980   = (450160.280, -482890.539, 7.455, 0.008)
 
 #   Nutation series model constants
 #   (see Explanatory Supplement, Table 3.222.1)
 #   Table of coefficents of 1, l', F, D, Ω, longitude, obliquity
-const iau_1980_nutation_series = [
+const iau_1980_nutation_series = (
     #  1-10
     PeriodicTerms([ 0,  0,  0,  0,  1], [ -171996.0, -174.2,  92025.0,    8.9]),
     PeriodicTerms([ 0,  0,  0,  0,  2], [    2062.0,    0.2,   -895.0,    0.5]),
@@ -155,4 +155,4 @@ const iau_1980_nutation_series = [
     PeriodicTerms([ 1,  0, -2,  2,  0], [      -1.0,    0.0,      0.0,    0.0]),
     PeriodicTerms([ 2,  0,  0,  2,  0], [       1.0,    0.0,      0.0,    0.0]),
     PeriodicTerms([ 0,  0,  2,  4,  2], [      -1.0,    0.0,      0.0,    0.0]),
-    PeriodicTerms([ 0,  1,  0,  1,  0], [       1.0,    0.0,      0.0,    0.0])]
+    PeriodicTerms([ 0,  1,  0,  1,  0], [       1.0,    0.0,      0.0,    0.0]))

@@ -10,6 +10,7 @@ export equinox, precession_nutation, proper_motion, radec2rad
 export SOFA
 
 using Polynomials
+using StaticArrays
 
 include("constants.jl")
 include("constants2011.jl")

@@ -1,55 +1,55 @@
 #   IAU 2000A Model
 
 #   Mean anomaly of the Sun in μas (Matthews et al. 2000)
-const l1_2000A = [1287104.79305, 129596581.0481, -0.5532, 0.000136, -0.00001149]
+const l1_2000A = (1287104.79305, 129596581.0481, -0.5532, 0.000136, -0.00001149)
 #   Mean anomaly of the Sun in μas (IERS 2003)
-const l1_2003A = [1287104.793048, 129596581.0481, - 0.5532, 0.000136, -0.00001149]
+const l1_2003A = (1287104.793048, 129596581.0481, - 0.5532, 0.000136, -0.00001149)
 #   Mean elongation of the Moon from the Sun in μas (Matthews et al. 2000)
-const D_2000A = [1072260.70369, 1602961601.2090, -6.3706, 0.006593, -0.00003169] 
+const D_2000A = (1072260.70369, 1602961601.2090, -6.3706, 0.006593, -0.00003169) 
 #   Mean elongation of the Moon from the Sun in μas (IERS 2003)
-const D_2003A = [1072260.703692, 1602961601.2090, -6.3706, 0.006593, -0.00003169] 
+const D_2003A = (1072260.703692, 1602961601.2090, -6.3706, 0.006593, -0.00003169) 
 #   Mean anomaly of the Moon in μas (IERS 2003)
-const l0_2003A = [485868.249036, 1717915923.2178, 31.8792, 0.051635, -0.00024470]
+const l0_2003A = (485868.249036, 1717915923.2178, 31.8792, 0.051635, -0.00024470)
 #   Mean longitude of the Moon minus that of the ascending node in μas (IERS 2003)
-const F_2003A = [335779.526232, 1739527262.8478, -12.7512, -0.001037, 0.00000417]
+const F_2003A = (335779.526232, 1739527262.8478, -12.7512, -0.001037, 0.00000417)
 #   Mean longitude of the Moon ascending node on the ecliptic (IERS 2003)
-const Ω_2003A = [450160.398036, -6962890.5431, 7.4722, 0.007702, -0.00005939]
+const Ω_2003A = (450160.398036, -6962890.5431, 7.4722, 0.007702, -0.00005939)
 
 #   See Matthews et al. 2000
 #   Mean anomaly of the Moon
-const l0_2000A_planet = [2.35555598, 8328.6914269554]
+const l0_2000A_planet = (2.35555598, 8328.6914269554)
 #   Mean longitude of the Moon minus that of the ascending node
-const F_2000A_planet = [1.627905234, 8433.466158131]
+const F_2000A_planet = (1.627905234, 8433.466158131)
 #   Mean elongation of the Moon from the Sun
-const D_2000A_planet = [5.198466741, 7771.3771468121]
+const D_2000A_planet = (5.198466741, 7771.3771468121)
 #   Mean longitude of the ascending node of the Moon
-const Ω_2000A_planet = [2.18243920, -33.757045]
+const Ω_2000A_planet = (2.18243920, -33.757045)
 
 #   Mean longitude of Mercury (IERS 2003)
-const lme_2003 = [4.402608842, 2608.7903141574]
+const lme_2003 = (4.402608842, 2608.7903141574)
 #   Mean longitude of Venus (IERS 2003)
-const lve_2003 = [3.176146697, 1021.3285546211]
+const lve_2003 = (3.176146697, 1021.3285546211)
 #   Mean longitude of Earth (IERS 2003)
-const lea_2003 = [1.753470314, 628.3075849991]
+const lea_2003 = (1.753470314, 628.3075849991)
 #   Mean longitude of Mars (IERS 2003)
-const lma_2003 = [6.203480913, 334.0612426700]
+const lma_2003 = (6.203480913, 334.0612426700)
 #   Mean longitude of Jupiter (IERS 2003)
-const lju_2003 = [0.599546497, 52.9690962641]
+const lju_2003 = (0.599546497, 52.9690962641)
 #   Mean longitude of Saturn (IERS 2003)
-const lsa_2003 = [0.874016757, 21.3299104960]
+const lsa_2003 = (0.874016757, 21.3299104960)
 #   Mean longitude of Uranus (IERS 2003)
-const lur_2003 = [5.481293872, 7.4781598567]
+const lur_2003 = (5.481293872, 7.4781598567)
 #   Mean longitude of Neptune (IERS 2003)
-const lne_2003 = [5.311886287, 3.8133035638]
+const lne_2003 = (5.311886287, 3.8133035638)
 #   Mean longitude of Neptune (Matthews et al. 2000)
-const lne_2003mhb = [5.321159000, 3.8127774000]
+const lne_2003mhb = (5.321159000, 3.8127774000)
 #   General accumulated precession in longitude (IERS 2003)
-const lge_2003 = [0.0, 0.024381750, 0.00000538691]
+const lge_2003 = (0.0, 0.024381750, 0.00000538691)
 
-const sp_2000A = [94.00e-6, 3808.35e-6, -119.94e-6, -72574.09e-6, 27.70e-6, 15.61e-6]
+const sp_2000A = (94.00e-6, 3808.35e-6, -119.94e-6, -72574.09e-6, 27.70e-6, 15.61e-6)
 
 #   Terms of order T^0
-const s0_2000A = [
+const s0_2000A = (
     # 1-10
     PeriodicTerms([0,  0,  0,  0,  1,  0,  0,  0], [-2640.73e-6,   0.39e-6]),
     PeriodicTerms([0,  0,  0,  0,  2,  0,  0,  0], [  -63.53e-6,   0.02e-6]),
@@ -87,17 +87,17 @@ const s0_2000A = [
     # 31-33
     PeriodicTerms([0,  0,  2, -2,  4,  0,  0,  0], [    0.11e-6,   0.00e-6]),
     PeriodicTerms([1,  0, -2,  0, -3,  0,  0,  0], [   -0.11e-6,   0.00e-6]),
-    PeriodicTerms([1,  0, -2,  0, -1,  0,  0,  0], [   -0.11e-6,   0.00e-6])]
+    PeriodicTerms([1,  0, -2,  0, -1,  0,  0,  0], [   -0.11e-6,   0.00e-6]))
 
 #   Terms of order T^1
-const s1_2000A = [
+const s1_2000A = (
     # 1-3 */
     PeriodicTerms([0,  0,  0,  0,  2,  0,  0,  0], [   -0.07e-6,   3.57e-6]),
     PeriodicTerms([0,  0,  0,  0,  1,  0,  0,  0], [    1.71e-6,  -0.03e-6]),
-    PeriodicTerms([0,  0,  2, -2,  3,  0,  0,  0], [    0.00e-6,   0.48e-6])]
+    PeriodicTerms([0,  0,  2, -2,  3,  0,  0,  0], [    0.00e-6,   0.48e-6]))
 
 #   Terms of order T^2
-const s2_2000A = [
+const s2_2000A = (
     # 1-10
     PeriodicTerms([0,  0,  0,  0,  1,  0,  0,  0], [  743.53e-6,  -0.17e-6]),
     PeriodicTerms([0,  0,  2, -2,  2,  0,  0,  0], [   56.91e-6,   0.06e-6]),
@@ -125,25 +125,25 @@ const s2_2000A = [
     PeriodicTerms([2,  0,  2,  0,  2,  0,  0,  0], [    0.13e-6,   0.00e-6]),
     PeriodicTerms([2,  0,  0,  0,  0,  0,  0,  0], [   -0.13e-6,   0.00e-6]),
     PeriodicTerms([1,  0,  2, -2,  2,  0,  0,  0], [   -0.12e-6,   0.00e-6]),
-    PeriodicTerms([0,  0,  2,  0,  0,  0,  0,  0], [   -0.11e-6,   0.00e-6])]
+    PeriodicTerms([0,  0,  2,  0,  0,  0,  0,  0], [   -0.11e-6,   0.00e-6]))
 
 #   Terms of order T^3
-const s3_2000A = [
+const s3_2000A = (
     # 1-4
     PeriodicTerms([0,  0,  0,  0,  1,  0,  0,  0], [    0.30e-6, -23.51e-6]),
     PeriodicTerms([0,  0,  2, -2,  2,  0,  0,  0], [   -0.03e-6,  -1.39e-6]),
     PeriodicTerms([0,  0,  2,  0,  2,  0,  0,  0], [   -0.01e-6,  -0.24e-6]),
-    PeriodicTerms([0,  0,  0,  0,  2,  0,  0,  0], [    0.00e-6,   0.22e-6])]
+    PeriodicTerms([0,  0,  0,  0,  2,  0,  0,  0], [    0.00e-6,   0.22e-6]))
 
 #   Terms of order T^4
-const s4_2000A = [
+const s4_2000A = (
     # 1-1
-    PeriodicTerms([0,  0,  0,  0,  1,  0,  0,  0], [   -0.26e-6,  -0.01e-6])]
+    PeriodicTerms([0,  0,  0,  0,  1,  0,  0,  0], [   -0.26e-6,  -0.01e-6]),)
 
 
 #   Complementary equinox model constants
 #   Table of coefficients of [l, l', F, D, Ω, LVe, LE, pA], [sin, cos]
-const iau_2000_equinox_0_series = [
+const iau_2000_equinox_0_series = (
     #  1-10
     PeriodicTerms([ 0,  0,  0,  0,  1,  0,  0,  0], [2640.96e-6, -0.39e-6]),
     PeriodicTerms([ 0,  0,  0,  0,  2,  0,  0,  0], [  63.52e-6, -0.02e-6]),
@@ -180,15 +180,15 @@ const iau_2000_equinox_0_series = [
     # 31-33 */
     PeriodicTerms([ 0,  0,  2, -2,  4,  0,  0,  0], [  -0.11e-6,  0.00e-6]),
     PeriodicTerms([ 1,  0, -2,  0, -3,  0,  0,  0], [   0.11e-6,  0.00e-6]),
-    PeriodicTerms([ 1,  0, -2,  0, -1,  0,  0,  0], [   0.11e-6,  0.00e-6])]
+    PeriodicTerms([ 1,  0, -2,  0, -1,  0,  0,  0], [   0.11e-6,  0.00e-6]))
 
-const iau_2000_equinox_1_series = [
-    PeriodicTerms([ 0,  0,  0,  0,  1,  0,  0,  0], [  -0.87e-6,  0.00e-6])]
+const iau_2000_equinox_1_series = (
+    PeriodicTerms([ 0,  0,  0,  0,  1,  0,  0,  0], [  -0.87e-6,  0.00e-6]),)
 
 #   Luni-solar nutation model constants
 #   (see Matthews, Herring, & Buffet 2002)
 #   Table of coefficients of l, l', F, D, Ω, longitude, obliquity
-const iau_2000A_nutation_lunisolar_series = [
+const iau_2000A_nutation_lunisolar_series = (
     #  1- 10
     PeriodicTerms([ 0, 0, 0, 0, 1], [ -172064161.0, -174666.0, 33386.0, 92052331.0, 9086.0, 15377.0]),
     PeriodicTerms([ 0, 0, 2,-2, 2], [ -13170906.0, -1675.0, -13696.0, 5730336.0, -3015.0, -4587.0]),
@@ -934,12 +934,12 @@ const iau_2000A_nutation_lunisolar_series = [
     PeriodicTerms([ 3, 1, 2, 2, 2], [      3.0,   0.0,    0.0,     -1.0,  0.0,    0.0]),
     PeriodicTerms([ 5, 0, 2, 0, 1], [     -3.0,   0.0,    0.0,      1.0,  0.0,    0.0]),
     PeriodicTerms([ 2,-1, 2, 4, 2], [     -3.0,   0.0,    0.0,      1.0,  0.0,    0.0]),
-    PeriodicTerms([ 2, 0, 2, 4, 1], [     -3.0,   0.0,    0.0,      2.0,  0.0,    0.0])]
+    PeriodicTerms([ 2, 0, 2, 4, 1], [     -3.0,   0.0,    0.0,      2.0,  0.0,    0.0]))
 
 #   Planetary nutation model constants
 #   (see Matthews, Herring, & Buffet 2002)
 #   Table of coefficients of l, F, D, Ω, Me, Ve, Ea, Ma, Ju, Sa, Ur, Ne, gen, longitude, obliquity
-const iau_2000A_nutation_planetary_series = [
+const iau_2000A_nutation_planetary_series = (
     # 1-10
     PeriodicTerms([ 0, 0, 0, 0, 0,  0,  8,-16, 4, 5, 0, 0, 0], [ 1440,   0,    0,   0]),
     PeriodicTerms([ 0, 0, 0, 0, 0,  0, -8, 16,-4,-5, 0, 0, 2], [   56,-117,  -42, -40]),
@@ -1695,4 +1695,4 @@ const iau_2000A_nutation_planetary_series = [
     PeriodicTerms([-1, 2, 2, 2, 0,  0,  2,  0,-2, 0, 0, 0, 0], [   13,   0,    0,  -6]),
     PeriodicTerms([-1, 2, 2, 2, 0,  3, -3,  0, 0, 0, 0, 0, 0], [    7,   0,    0,  -3]),
     PeriodicTerms([ 1, 2, 0, 2, 0,  1, -1,  0, 0, 0, 0, 0, 0], [    3,   0,    0,  -1]),
-    PeriodicTerms([ 0, 2, 2, 2, 0,  0,  2,  0,-2, 0, 0, 0, 0], [    3,   0,    0,  -1])]
+    PeriodicTerms([ 0, 2, 2, 2, 0,  0,  2,  0,-2, 0, 0, 0, 0], [    3,   0,    0,  -1]))
