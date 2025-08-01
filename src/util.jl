@@ -35,7 +35,7 @@ function radec2rad(coord::Tuple{String, String})
     ra  = match(r"(\d?\d)[ h] *(\d\d)[ m] *(\d\d\.?\d*)s?", coord[1])
     dec = match(r"([+-]?\d?\d)[ d°] *(\d\d)[ m'] *(\d\d.?\d*)[s\"]?", coord[2])
     (15*deg2rad(sum([1, 1/60, 1/3600].*[parse(Int, v) for v in ra[1]])),
-     deg2rad(Integer(dec[1]) + Integer(dec[2])/60 + Integer(dec[3])/3600))
+     deg2rad(Int(dec[1]) + Int(dec[2])/60 + Int(dec[3])/3600))
 end
 
 function calendar2MJD(year::Integer, month::Integer, day::Integer)

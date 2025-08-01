@@ -226,12 +226,12 @@ function d2tf(ndp::Integer, day::Float64)
 
     sn = day >= 0.0 ? '+' : '-'
     a  = round(rs * a)
-    ah = convert(Integer, trunc(a/rh))
+    ah = convert(Int, trunc(a/rh))
     a -= ah*rh
-    am = convert(Integer, trunc(a/rm))
+    am = convert(Int, trunc(a/rm))
     a -= am*rm
-    as = convert(Integer, trunc(a/rs))
-    af = convert(Integer, a - as*rs)
+    as = convert(Int, trunc(a/rs))
+    af = convert(Int, a - as*rs)
 
     NamedTuple{(:sign, :hour, :minute, :second, :fraction)}((sn, ah, am, as, af))
 end

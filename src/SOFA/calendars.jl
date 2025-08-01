@@ -206,7 +206,7 @@ function jd2cal(day1::Real, day2::Real)
     @assert JDMIN <= (day1 + day2) <= JDMAX "Day is out of range."
 
     # Separate day and fraction where fraction in range [-0.5, 0.5].
-    day::Integer = convert(Int, round(day1)) + convert(Int, round(day2))
+    day::Int = convert(Int, round(day1)) + convert(Int, round(day2))
     fracs::Vector{AbstractFloat} = [(day1 - round(day1)), (day2 - round(day2))]
     
     # Compute frac1 + frac2 + 0.5 using compensated summation (Klein 2006).
@@ -248,16 +248,16 @@ function jd2cal(day1::Real, day2::Real)
     end
 
 #    day2cal(day)
-    ll::Integer = day + 68569
-    nn::Integer = (4 * ll)÷146097
+    ll::Int = day + 68569
+    nn::Int = (4 * ll)÷146097
     ll -= (146097 * nn + 3)÷4
     ii = (4000 * (ll + 1))÷1461001
     ll -= (1461 * ii)÷4 - 31
-    kk::Integer = (80 * ll)÷2447
+    kk::Int = (80 * ll)÷2447
     day = ll - (2447 * kk)÷80
     ll = kk÷11
-    month::Integer = kk + 2 - 12*ll
-    year::Integer = 100 * (nn - 49) + ii + ll
+    month::Int = kk + 2 - 12*ll
+    year::Int = 100 * (nn - 49) + ii + ll
 
     (year = year, month = month, day = day, fraction = frac)
 end
@@ -306,7 +306,7 @@ formatting messages: rounded to a specified precision.
 function jdcalf(ndp::Integer, day1::Real, day2::Real)
 
     # Denominator of fraction (e.g., 100 for 2 decimal places)
-    jj::Integer, denom::Float64 = 0 <= ndp <= 9 ? (0, 10.0^ndp) : (1, 1.0)
+    jj::Int, denom::Float64 = 0 <= ndp <= 9 ? (0, 10.0^ndp) : (1, 1.0)
 
     d1, d2 = abs(day1) >= abs(day2) ? (day1, day2) : (day2, day1)
 
@@ -330,8 +330,8 @@ function jdcalf(ndp::Integer, day1::Real, day2::Real)
     djd += 0.5
 
     # Convert to Gregorian calendar
-    year::Integer, month::Integer, day::Integer, fraction::Float64 = jd2cal(djd, rf)
-    # fraction = round(ff * denom)::Integer
+    year::Int, month::Int, day::Int, fraction::Float64 = jd2cal(djd, rf)
+    # fraction = round(ff * denom)::Int
 
-    (year = year, month = month, day = day, fraction = convert(Integer, round(ff * denom)))
+    (year = year, month = month, day = day, fraction = convert(Int, round(ff * denom)))
 end
