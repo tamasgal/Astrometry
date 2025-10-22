@@ -41,6 +41,9 @@ const TDB0   = -6.55e-5 # second
 #   L_B = 1 - d(TDB)/d(TCB)
 const ELB    = 1.550519768e-8
 
+#   Gravitational constant
+const GK = 0.017202098950
+
 #   Schwarzschild radius of the Sun
 #   2 * 1.32712440041e20 / (2.99792458e8)^2 / 1.49597870700e11
 const SCHWARZRADIUS = 1.97412574336e-8 # AU

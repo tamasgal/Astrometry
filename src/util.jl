@@ -7,7 +7,7 @@ const MODJULDAY0 = 51544.5
 const JULIANDAY2000 = 2451545.0
 const DAYINYEAR1900 = 365.242198781
 const DAYINYEAR2000 = 365.25
-const DAYINMONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+const DAYINMONTH = SVector(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 
 struct PeriodicTerms
     #  angular harmonics
@@ -20,10 +20,22 @@ end
 # getfields(term, field) = [getfield(term, j) for j=1:getindex(typeof(term), field)]
 # getfields(term, N) = [getfield(term, j) for j=1:N]
 
-Rx(θ) = [1. 0. 0.; 0. cos(θ) sin(θ); 0. -sin(θ) cos(θ)]
-Ry(θ) = [cos(θ) 0. -sin(θ); 0. 1. 0.; sin(θ) 0. cos(θ)]
-Rz(θ) = [cos(θ) sin(θ) 0.; -sin(θ) cos(θ) 0.; 0. 0. 1.]
-vec2mat(v) = [0. -v[3] v[2]; v[3] 0. -v[1]; -v[2] v[1] 0.]
+Rx(θ) = SMatrix{3,3}(1.0, 0.0, 0.0, 0.0, cos(θ), -sin(θ), 0.0, sin(θ), cos(θ))
+Ry(θ) = SMatrix{3,3}(cos(θ), 0.0, sin(θ), 0.0, 1.0, 0.0, -sin(θ), 0.0, cos(θ))
+Rz(θ) = SMatrix{3,3}(cos(θ), -sin(θ), 0.0, sin(θ), cos(θ), 0.0, 0.0, 0.0, 1.0)
+function vec2mat(v::AbstractVector{<:Real})
+    zerot = zero(eltype(v))
+    SMatrix{3,3}(zerot, v[3], -v[2], -v[3], zerot, v[1], v[2], -v[1], zerot)
+end
+
+#=
+function *(a::SMatrix{3,3}, b::SMatrix{3,3})
+    SMatrix{3,3}(
+        sum(a[1,:].*b[:,1]), sum(a[1,:].*b[:,2]), sum(a[1,:].*b[:,3]),
+        sum(a[2,:].*b[:,1]), sum(a[2,:].*b[:,2]), sum(a[2,:].*b[:,3]),
+        sum(a[3,:].*b[:,1]), sum(a[3,:].*b[:,2]), sum(a[3,:].*b[:,3]))
+end
+=#
 
 norm2(v) = sqrt(sum(v.*v))
 
@@ -70,15 +82,15 @@ corrections.
 """
 function proper_motion(object, pmotion, parallax, rvelocity, pmt, observer)
 
-    obj = [cos(object[1])*cos(object[2]),
+    obj = MVector(cos(object[1])*cos(object[2]),
            sin(object[1])*cos(object[2]),
-           sin(object[2])]
+           sin(object[2]))
 
     prv = SECPERDAY*1000*DAYPERYEAR/ASTRUNIT * rvelocity * deg2rad(1/3600)*parallax
 
-    pmo = [prv*obj[1] - pmotion[1]*obj[2] - pmotion[2]*cos(object[1])*obj[3],
+    pmo = SVector(prv*obj[1] - pmotion[1]*obj[2] - pmotion[2]*cos(object[1])*obj[3],
            prv*obj[2] + pmotion[1]*obj[1] - pmotion[2]*sin(object[1])*obj[3],
-           prv*obj[3] + pmotion[2]*cos(object[2])]
+           prv*obj[3] + pmotion[2]*cos(object[2]))
 
     obj .+= (pmt .+ AULIGHT*sum(obj.*observer)).*pmo .-
         deg2rad(1/3600)*parallax.*observer

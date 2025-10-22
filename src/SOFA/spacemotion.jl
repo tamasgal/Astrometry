@@ -1,7 +1,7 @@
 #### Astronomy / Space Motion
 
 """
-    pvstar(pv::Vector{Vector{Float64}})
+    pvstar(pv::AbstractVector{<:AbstractVector{AbstractFloat}})
 
 Convert star position & velocity vector to catalog coordinates.
 
@@ -73,7 +73,7 @@ Convert star position & velocity vector to catalog coordinates.
 
 Stumpff, P., 1985, Astron.Astrophys. 144, 232-240.
 """
-function pvstar(pv::Vector{Vector{Float64}})
+function pvstar(pv::V) where V<:AbstractVector{<:AbstractVector{<:AbstractFloat}}
     DC = SECPERDAY/(ASTRUNIT/LIGHTSPEED)
     #  Isolate the radial component of the velocity (AU/day, inertial).
     @inline vr = pn(pv[1])[2]'*pv[2]
@@ -91,7 +91,7 @@ function pvstar(pv::Vector{Vector{Float64}})
     #  cartesian to spherical
     ### θ, ϕ, r, dθ, dϕ, dr = pv2s([pv[1], w.*ur .+ (pv[2] .- ur)./d])
     θ, ϕ, r, dθ, dϕ, dr = pv2s(
-        [pv[1], (DC*(betr + w/(1.0+sqrt(1.0-w)))*pn(pv[1])[2] .+ pv[2] .- ur)./d])
+        SVector(pv[1], (DC*(betr + w/(1.0+sqrt(1.0-w)))*pn(pv[1])[2] .+ pv[2] .- ur)./d))
     (ras = anp(θ), dec = ϕ, pmras = DAYPERYEAR*dθ, pmdec = DAYPERYEAR*dϕ,
      plx = rad2deg(3600.0)/r, rvel = 1e-3*ASTRUNIT/SECPERDAY*dr)
 end
@@ -101,8 +101,8 @@ const VMAX  = 0.5
 const IMAX  = 100
 
 """
-    starpv(ras::Float64, dec::Float64, pmras::Float64, pmdec::Float64,
-           plx::Float64, rvel::Float64)
+    starpv(ras::AbstractFloat, dec::AbstractFloat, pmras::AbstractFloat, pmdec::AbstractFloat,
+           plx::AbstractFloat, rvel::AbstractFloat)
 
 Convert star catalog coordinates to position+velocity vector.
 
@@ -190,8 +190,8 @@ Convert star catalog coordinates to position+velocity vector.
 
 Stumpff, P., 1985, Astron.Astrophys. 144, 232-240.
 """
-function starpv(ras::Float64, dec::Float64, pmras::Float64, pmdec::Float64,
-                plx::Float64, rvel::Float64)
+function starpv(ras::F, dec::F, pmras::F, pmdec::F, plx::F, rvel::F) where
+      F<:AbstractFloat
     DC = SECPERDAY/(ASTRUNIT/LIGHTSPEED)
     #  Distance (AU).
     r  = 3600*rad2deg(1)/(plx >= PXMIN ? plx : PXMIN)
@@ -203,7 +203,7 @@ function starpv(ras::Float64, dec::Float64, pmras::Float64, pmdec::Float64,
     @inline pv = s2pv(ras, dec, r, dras, ddec, dr)
     #  If excessive velocity, arbitrarily set to zero.
     if pm(pv[2])/DC > VMAX
-        pv[2] .= [0., 0., 0.]
+        pv[2] .= MVector{3}(0., 0., 0.)
     end
     #  Isolate radial and transverse components of velocity (AU/day).
     @inline vsr = pn(pv[1])[2]'*pv[2]

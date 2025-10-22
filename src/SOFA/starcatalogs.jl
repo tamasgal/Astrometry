@@ -1,8 +1,8 @@
 #### Astronomy / Star Catalogs
 
 """
-    fk425(ra::Float64, ded::Float64, δra::Float64, δdec::Float64, plx::Float64,
-          rv::Float64)
+    fk425(ra::AbstractFloat, ded::AbstractFloat, δra::AbstractFloat, δdec::AbstractFloat, plx::AbstractFloat,
+          rv::AbstractFloat)
 
 Convert B1950.0 FK4 star catalog data to J2000.0 FK5.
 
@@ -98,8 +98,8 @@ Yallop, B.D. et al., 1989, "Transformation of mean star places from
 FK4 B1950.0 to FK5 J2000.0 using matrices in 6-space".  Astron.J. 97,
 274.
 """
-function fk425(ra::Float64, dec::Float64, δra::Float64, δdec::Float64,
-               plx::Float64, rv::Float64)
+function fk425(ra::F, dec::F, δra::F, δdec::F, plx::F, rv::F) where
+      F<:AbstractFloat
     ####  Canonical constants (Seidelmann 1992)
     #  km/s to AU/trop-century
     PMF, VF, TINY = 3.6e5*rad2deg(1.), 21.095, 1e-30
@@ -115,11 +115,12 @@ function fk425(ra::Float64, dec::Float64, δra::Float64, δdec::Float64,
     # println(r01)
     # r1  = r0 .- A_fk4_fk5 .+ (r01'*A_fk4_fk5)*r01
     # println(r1)
-    r1_ = [r0_[1] .- A_fk4_fk5[1:3] .+ dot(r0_[1], A_fk4_fk5[1:3])*r0_[1],
-           r0_[2] .- A_fk4_fk5[4:6] .+ dot(r0_[1], A_fk4_fk5[4:6])*r0_[1]]
+    r1_ = SVector(r0_[1] .- A_fk4_fk5[1:3] .+ dot(r0_[1], A_fk4_fk5[1:3])*r0_[1],
+           r0_[2] .- A_fk4_fk5[4:6] .+ dot(r0_[1], A_fk4_fk5[4:6])*r0_[1])
     # println(r1_)
     # pv = M_fk4_fk5*(r0 .- A_fk4_fk5 .+ (r01'*A_fk4_fk5)*r01)
-    pv_ = [[dot(Mfk4fk5[i][j][1], r1_[1]) + dot(Mfk4fk5[i][j][2], r1_[2]) for j=1:3] for i=1:2]
+    pv_ = SVector((SVector((dot(Mfk4fk5[i][j][1], r1_[1]) +
+         dot(Mfk4fk5[i][j][2], r1_[2]) for j=1:3)...) for i=1:2)...)
     # println(pv)
     # println(pv_)
     #  Revert to catalog form
@@ -132,7 +133,7 @@ function fk425(ra::Float64, dec::Float64, δra::Float64, δdec::Float64,
 end
 
 """
-    fk45z(ra::Float64, dec::Float64, epoch::Float64)
+    fk45z(ra::AbstractFloat, dec::AbstractFloat, epoch::AbstractFloat)
 
 Convert a B1950.0 FK4 star position to J2000.0 FK5, assuming zero
 proper motion in the FK5 system.
@@ -201,7 +202,7 @@ new IAU resolutions".  Astron.Astrophys.  128, 263-267.
 Seidelmann, P.K. (ed), 1992, "Explanatory Supplement to the
 Astronomical Almanac", ISBN 0-935702-68-7.
 """
-function fk45z(ra::Float64, dec::Float64, epoch::Float64)
+function fk45z(ra::AbstractFloat, dec::AbstractFloat, epoch::AbstractFloat)
     PMF = 3.6e5*rad2deg(1.)
     #  Spherical coordinates to p-vector, adjust p-vector to give zero proper
     #  motion in FK5.
@@ -209,7 +210,7 @@ function fk45z(ra::Float64, dec::Float64, epoch::Float64)
     #  Remove E-terms
     p  = r1 .- (p .- dot(r1, p).*r1)
     #  Convert to Fricke system pv-vector (cf. Seidelmann 3.591-3)
-    pv = [[dot(Mfk4fk5[i][j][1], p) for j=1:3] for i=1:2]
+    pv = SVector((SVector((dot(Mfk4fk5[i][j][1], p) for j=1:3)...) for i=1:2)...)
     #  Allow for fictitious proper motion
     pv = pvu((epj(epb2jd(epoch)...) - 2000.0)/PMF, pv)
     #  Revert to spherical coordinates
@@ -218,8 +219,8 @@ function fk45z(ra::Float64, dec::Float64, epoch::Float64)
 end
 
 """
-    fk524(ra::Float64, dec::Float64, δra::Float64, δdec::Float64, plx::Float64,
-          rv::Float64)
+    fk524(ra::AbstractFloat, dec::AbstractFloat, δra::AbstractFloat, δdec::AbstractFloat, plx::AbstractFloat,
+          rv::AbstractFloat)
 
 Convert J2000.0 FK5 star catalog data to B1950.0 FK4.
 
@@ -313,15 +314,16 @@ Yallop, B.D. et al., 1989, "Transformation of mean star places from
 FK4 B1950.0 to FK5 J2000.0 using matrices in 6-space".  Astron.J. 97,
 274.
 """
-function fk524(ra::Float64, dec::Float64, δra::Float64, δdec::Float64, plx::Float64,
-               rv::Float64)
+function fk524(ra::AbstractFloat, dec::AbstractFloat, δra::AbstractFloat, δdec::AbstractFloat, plx::AbstractFloat,
+               rv::AbstractFloat)
     ####  Canonical constants (Seidelmann 1992)
     #  km/s to AU/trop-century
     PMF, VF, TINY = 3.6e5*rad2deg(1.), 21.095, 1e-30
     #  Express as a pv-vector
     r0 = s2pv(ra, dec, 1.0, PMF*δra, PMF*δdec, VF*plx*rv)
     #  Convert pv-vector to Bessel-Newcomb system (cf. Seidelmann 3.592-1)
-    r1 = [[dot(Mfk5fk4[i][j][1], r0[1]) + dot(Mfk5fk4[i][j][2], r0[2]) for j=1:3] for i=1:2]
+    r1 = SVector((SVector((dot(Mfk5fk4[i][j][1], r0[1]) +
+         dot(Mfk5fk4[i][j][2], r0[2]) for j=1:3)...) for i=1:2)...)
     #  Apply E-terms (equivalent to Seidelmann 3.592-3, one iteration)
     #  Direction
     p1 = r1[1] .+ norm(r1[1])*A_fk4_fk5[1:3] .- dot(r1[1], A_fk4_fk5[1:3])*r1[1]
@@ -336,8 +338,8 @@ function fk524(ra::Float64, dec::Float64, δra::Float64, δdec::Float64, plx::Fl
     (RA = mod2pi(cat[1]), Dec = cat[2], δRA = cat[4]/PMF, δDec = cat[5]/PMF, plx = plx, rv = rv)
 end
 """
-    fk52h(ra::Float64, dec::Float64, δra::Float64, δdec::Float64, plx::Float64,
-          rv::Float64)
+    fk52h(ra::AbstractFloat, dec::AbstractFloat, δra::AbstractFloat, δdec::AbstractFloat, plx::AbstractFloat,
+          rv::AbstractFloat)
 
 Transform FK5 (J2000.0) star data into the Hipparcos system.
 
@@ -382,8 +384,8 @@ Reference:
 
 F.Mignard & M.Froeschle, Astron.Astrophys., 354, 732-739 (2000).
 """
-function fk52h(ra::Float64, dec::Float64, δra::Float64, δdec::Float64,
-               plx::Float64, rv::Float64)
+function fk52h(ra::AbstractFloat, dec::AbstractFloat, δra::AbstractFloat, δdec::AbstractFloat,
+               plx::AbstractFloat, rv::AbstractFloat)
     #  FK5 to Hipparcos orientation matrix and rotation vector
     ϵ, ω = fk5hip()
     #  FK5 barycentric normalized pv-vector
@@ -392,11 +394,11 @@ function fk52h(ra::Float64, dec::Float64, δra::Float64, δdec::Float64,
     #  Apply spin to the position giving an extra space motion component, add it
     #  to the FK5 space motion, orient the FK5 space motion into the Hipparcos
     #  system, and convert Hipparcos pv-vector to spherical coordinates
-    pvstar([ϵ*pv[1], ϵ*(vec2mat(pv[1])*ω/DAYPERYEAR .+ pv[2])])
+    pvstar(SVector(ϵ*pv[1], ϵ*(vec2mat(pv[1])*ω/DAYPERYEAR .+ pv[2])))
 end
 
 """
-    fk54z(ra::Float64, dec::Float64, epoch::Float64)
+    fk54z(ra::AbstractFloat, dec::AbstractFloat, epoch::AbstractFloat)
 
 Convert a J2000.0 FK5 star position to B1950.0 FK4, assuming zero
 proper motion in FK5 and parallax.
@@ -445,15 +447,16 @@ Status:  support function.
 5) The RA component of the returned (fictitious) proper motion is
    dRA/dt rather than cos(Dec)*dRA/dt.
 """
-function fk54z(ra::Float64, dec::Float64, epoch::Float64)
+function fk54z(ra::AbstractFloat, dec::AbstractFloat, epoch::AbstractFloat)
     #  FK5 equinox J2000.0 to FK4 equinox B1950.0
     cat = fk524(ra, dec, 0., 0., 0., 0.)
     #  Spherical to Cartesian
     p1 = s2c(cat[1], cat[2])
     #  Fictitious proper motion (radians/year) and apply the motion
     p1 .+= (epoch - 1950.0)*(
-        cat[3]*[-p1[2], p1[1], 0.] .+
-        cat[4]*[-cos(cat[1])*sin(cat[2]), -sin(cat[1])*sin(cat[2]), cos(cat[2])])
+        cat[3]*SVector(-p1[2], p1[1], 0.) .+
+        cat[4]*SVector(-cos(cat[1])*sin(cat[2]), -sin(cat[1])*sin(cat[2]),
+         cos(cat[2])))
     #  Cartesian to spherical
     ra, dec = c2s(p1)
     (RA = mod2pi(ra), Dec = dec, δRA = cat[3], δDec = cat[4])
@@ -500,7 +503,7 @@ function fk5hip()
 end
 
 """
-    fk5hz(ra::Float64, dec::Float64, day1::Float64, day2::Float64)
+    fk5hz(ra::AbstractFloat, dec::AbstractFloat, day1::AbstractFloat, day2::AbstractFloat)
 
 Transform an FK5 (J2000.0) star position into the system of the
 Hipparcos catalog, assuming zero Hipparcos proper motion.
@@ -562,7 +565,7 @@ Status:  support function.
 
 F.Mignard & M.Froeschle, 2000, Astron.Astrophys. 354, 732-739.
 """
-function fk5hz(ra::Float64, dec::Float64, day1::Float64, day2::Float64)
+function fk5hz(ra::AbstractFloat, dec::AbstractFloat, day1::AbstractFloat, day2::AbstractFloat)
     #  Interval from given date to fundamental epoch J2000.0 (Julian years)
     Δt = - ((day1 - JD2000) + day2)/DAYPERYEAR
     #  FK5 to Hipparcos orientation matrix and rotation vector
@@ -575,8 +578,8 @@ function fk5hz(ra::Float64, dec::Float64, day1::Float64, day2::Float64)
 end
 
 """
-    h2fk5(ra::Float64, dec::Float64, δra::Float64, δdec::Float64, plx::Float64,
-          rv::Float64)
+    h2fk5(ra::AbstractFloat, dec::AbstractFloat, δra::AbstractFloat, δdec::AbstractFloat, plx::AbstractFloat,
+          rv::AbstractFloat)
 
 Transform Hipparcos star data into the FK5 (J2000.0) system.
 
@@ -621,8 +624,8 @@ Status:  support function.
 
 F.Mignard & M.Froeschle, Astron.Astrophys., 354, 732-739 (2000).
 """
-function h2fk5(ra::Float64, dec::Float64, δra::Float64, δdec::Float64,
-               plx::Float64, rv::Float64)
+function h2fk5(ra::AbstractFloat, dec::AbstractFloat, δra::AbstractFloat, δdec::AbstractFloat,
+               plx::AbstractFloat, rv::AbstractFloat)
     #  Hipparcos barycentric normalized pv-vector
     pv = starpv(ra, dec, δra, δdec, plx, rv)
     #  FK5 to Hipparcos orientation matrix and spin vector
@@ -632,11 +635,11 @@ function h2fk5(ra::Float64, dec::Float64, δra::Float64, δdec::Float64,
     #  subtract this component from the Hipparcos space motion, de-orient
     #  the Hipparcos space motion into the FK5 system, and convert the FK5
     # pv-vector to spherical coordinates.
-    pvstar([ϵ'*pv[1], ϵ'*(pv[2] .- vec2mat(pv[1])*ϵ*ω./DAYPERYEAR)])
+    pvstar(SVector(ϵ'*pv[1], ϵ'*(pv[2] .- vec2mat(pv[1])*ϵ*ω./DAYPERYEAR)))
 end
 
 """
-    hfk5z(ra::Float64, dec::Float64, day1::Float64, day2::Float64)
+    hfk5z(ra::AbstractFloat, dec::AbstractFloat, day1::AbstractFloat, day2::AbstractFloat)
 
 Transform a Hipparcos star position into FK5 J2000.0, assuming zero
 Hipparcos proper motion.
@@ -701,7 +704,7 @@ Returned (all FK5, equinox J2000.0, date date1+date2):
 
 F.Mignard & M.Froeschle, 2000, Astron.Astrophys. 354, 732-739.
 """
-function hfk5z(ra::Float64, dec::Float64, day1::Float64, day2::Float64)
+function hfk5z(ra::AbstractFloat, dec::AbstractFloat, day1::AbstractFloat, day2::AbstractFloat)
     #  Time interval from fundamental epoch J2000.0 to given date (Julian year)
     Δt = ((day1 - JD2000) + day2)/DAYPERYEAR
     #  FK5 to Hipparcos orientiation matrix and rotation vector
@@ -712,14 +715,14 @@ function hfk5z(ra::Float64, dec::Float64, day1::Float64, day2::Float64)
     #  the Hipparcos position into FK5 J2000.0, rotate the spin to the
     #  Hipparcos system, apply spin to the position giving the space motion,
     #  and de-orient and de-spin the Hipparcos space motion into the Fk5 J2000.0
-    cat = pv2s([(ϵ*rv2m(Δt*ω))'*p, (ϵ*rv2m(Δt*ω))'*(vec2mat(ϵ*ω)*p)])
+    cat = pv2s(SVector((ϵ*rv2m(Δt*ω))'*p, (ϵ*rv2m(Δt*ω))'*(vec2mat(ϵ*ω)*p)))
     (RA = mod2pi(cat[1]), Dec = cat[2], δRA = cat[4], δDec = cat[5])
 end
 
 """
-    starpm(ras::Float64, dec::Float64, pmras::Float64, pmdec::Float64,
-           plx::Float64, rvel::Float64, epoch1a::Float64, epoch1b::Float64,
-           epoch2a::Float64, epoch2b::Float64)
+    starpm(ras::AbstractFloat, dec::AbstractFloat, pmras::AbstractFloat, pmdec::AbstractFloat,
+           plx::AbstractFloat, rvel::AbstractFloat, epoch1a::AbstractFloat, epoch1b::AbstractFloat,
+           epoch2a::AbstractFloat, epoch2b::AbstractFloat)
 
 Star proper motion:  update star catalog data for space motion.
 
@@ -811,9 +814,9 @@ Star proper motion:  update star catalog data for space motion.
    converge within a set number of iterations, 4 is added to the
    status.
 """
-function starpm(ras::Float64, dec::Float64, pmras::Float64, pmdec::Float64,
-                plx::Float64, rvel::Float64, epoch1a::Float64, epoch1b::Float64,
-                epoch2a::Float64, epoch2b::Float64)
+function starpm(ras::AbstractFloat, dec::AbstractFloat, pmras::AbstractFloat, pmdec::AbstractFloat,
+                plx::AbstractFloat, rvel::AbstractFloat, epoch1a::AbstractFloat, epoch1b::AbstractFloat,
+                epoch2a::AbstractFloat, epoch2b::AbstractFloat)
     DC = 173.1446333113497
     #  Position-velocity vector
     pv1 = starpv(ras, dec, pmras, pmdec, plx, rvel)

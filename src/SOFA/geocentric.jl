@@ -49,7 +49,7 @@ Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992), p220.
 """
 function eform(model::Symbol)
-    @assert model in [:WGS84, :GRS80, :WGS72] "Model not one of (:WGS72, :GRS80, :WGS84)."
+    @assert model in (:WGS84, :GRS80, :WGS72) "Model not one of (:WGS72, :GRS80, :WGS84)."
     if model == :WGS84
         radius, oblate = wgs84_radius, wgs84_oblate
     elseif model == :GRS80
@@ -61,7 +61,7 @@ function eform(model::Symbol)
 end
 
 """
-    gc2gd(model::Symbol, pos::Vector{Float64})
+    gc2gd(model::Symbol, pos::AbstractVector{<:AbstractFloat})
     
 Transform geocentric coordinates to geodetic using the specified
 reference ellipsoid.
@@ -69,13 +69,13 @@ reference ellipsoid.
 # Input
 
  - `model::Int`: ellipsoid identifier (Note 1)
- - `pos::Vector{Float64}`: geocentric vector (Note 2)
+ - `pos::AbstractVector{<:AbstractFloat}`: geocentric vector (Note 2)
 
 # Output
 
- - `ϵ::Float64`: longitude (radians, east +ve, Note 3)
- - `ϕ::Float64`: latitude (geodetic, radians, Note 3)
- - `r::Float64`: height above ellipsoid (geodetic, Notes 2,3)
+ - `ϵ::AbstractFloat`: longitude (radians, east +ve, Note 3)
+ - `ϕ::AbstractFloat`: latitude (geodetic, radians, Note 3)
+ - `r::AbstractFloat`: height above ellipsoid (geodetic, Notes 2,3)
 
 # Note
 
@@ -100,12 +100,12 @@ reference ellipsoid.
 
 4) The inverse transformation is performed in the function eraGd2gc.
 """
-function gc2gd(model::Symbol, pos::Vector{Float64})
+function gc2gd(model::Symbol, pos::AbstractVector{<:AbstractFloat})
     gc2gde(values(eform(model))..., pos)
 end
 
 """
-    gc2gde(radius::Float64, oblate::Float64, pos::Vector{Float64})
+    gc2gde(radius::AbstractFloat, oblate::AbstractFloat, pos::AbstractVector{<:AbstractFloat})
 
 Transform geocentric coordinates to geodetic for a reference
 ellipsoid of specified form.
@@ -151,7 +151,7 @@ ellipsoid of specified form.
 Fukushima, T., "Transformation from Cartesian to geodetic coordinates
 accelerated by Halley's method", J.Geodesy (2006) 79: 689-693
 """
-function gc2gde(radius::Float64, oblate::Float64, pos::Vector{Float64})
+function gc2gde(radius::AbstractFloat, oblate::AbstractFloat, pos::AbstractVector{<:AbstractFloat})
     @assert 0.0 <= oblate < 1.0 "Oblateness out of range [0 - 1)."
     @assert radius > 0.0 "Radius is <= 0."
     @assert (1.0 - (2.0 - oblate)*oblate) >= 0.0 "Oblateness is too larage."
@@ -178,7 +178,7 @@ function gc2gde(radius::Float64, oblate::Float64, pos::Vector{Float64})
 end
 
 """
-    gd2gc(model::Symbol, ϵ::Float64, ϕ::Float64, r::Float64)
+    gd2gc(model::Symbol, ϵ::AbstractFloat, ϕ::AbstractFloat, r::AbstractFloat)
 
 Transform geodetic coordinates to geocentric using the specified
 reference ellipsoid.
@@ -218,12 +218,12 @@ reference ellipsoid.
 
 4) The inverse transformation is performed in the function eraGc2gd.
 """
-function gd2gc(model::Symbol, ϵ::Float64, ϕ::Float64, r::Float64)
+function gd2gc(model::Symbol, ϵ::AbstractFloat, ϕ::AbstractFloat, r::AbstractFloat)
     @inline gd2gce(values(eform(model))..., ϵ, ϕ, r)
 end
 
 """
-    gd2gce(radius::Float64, oblate::Float64, ϵ::Float64, ϕ::Float64, r::Float64)
+    gd2gce(radius::AbstractFloat, oblate::AbstractFloat, ϵ::AbstractFloat, ϕ::AbstractFloat, r::AbstractFloat)
 
 Transform geodetic coordinates to geocentric for a reference ellipsoid
 of specified form.
@@ -270,9 +270,9 @@ Section 4.5, p96.
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992), Section 4.22, p202.
 """
-function gd2gce(radius::Float64, oblate::Float64, ϵ::Float64, ϕ::Float64, r::Float64)
+function gd2gce(radius::AbstractFloat, oblate::AbstractFloat, ϵ::AbstractFloat, ϕ::AbstractFloat, r::AbstractFloat)
     @assert (cos(ϕ)^2 + ((1.0-oblate)*sin(ϕ))^2) >= 0.0 "Equatorial radius is <= 0"
     d  = sqrt(cos(ϕ)^2 + ((1.0-oblate)*sin(ϕ))^2)
     rr = radius/d + r
-    [rr*cos(ϕ)*cos(ϵ), rr*cos(ϕ)*sin(ϵ), ((1.0-oblate)^2*radius/d + r)*sin(ϕ)]
+    SVector(rr*cos(ϕ)*cos(ϵ), rr*cos(ϕ)*sin(ϵ), ((1.0-oblate)^2*radius/d + r)*sin(ϕ))
 end

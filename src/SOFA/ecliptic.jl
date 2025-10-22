@@ -1,7 +1,7 @@
 #### Astronomy / Ecliptic Coordinates
 
 """
-    eceq06(day1::Float64, day2::Float64, lon::Float64, lat::Float64)
+    eceq06(day1::AbstractFloat, day2::AbstractFloat, lon::AbstractFloat, lat::AbstractFloat)
 
 Transformation from ecliptic coordinates (mean equinox and ecliptic of
 date) to ICRS RA,Dec, using the IAU 2006 precession model.
@@ -48,13 +48,13 @@ date) to ICRS RA,Dec, using the IAU 2006 precession model.
    right ascension and declination, with only frame bias (always less
    than 25 mas) to disturb this classical picture.
 """
-function eceq06(day1::Float64, day2::Float64, lon::Float64, lat::Float64)
+function eceq06(day1::AbstractFloat, day2::AbstractFloat, lon::AbstractFloat, lat::AbstractFloat)
     @inline ras, dec = c2s(ecm06(day1, day2)'*s2c(lon, lat))
     NamedTuple{(:ras, :dec)}((anp(ras), anpm(dec)))
 end
 
 """
-    ecm06(day1::Float64, day2::Float64)
+    ecm06(day1::AbstractFloat, day2::AbstractFloat)
 
 ICRS equatorial to ecliptic rotation matrix, IAU 2006.
 
@@ -105,12 +105,12 @@ ICRS equatorial to ecliptic rotation matrix, IAU 2006.
    longitude and latitude, with only frame bias (always less than 25
    mas) to disturb this classical picture.
 """
-function ecm06(day1::Float64, day2::Float64)
+function ecm06(day1::AbstractFloat, day2::AbstractFloat)
     @inline Rx(obl06(day1, day2))*pmat06(day1, day2)
 end
 
 """
-    eqec06(day1::Float64, day2::Float64, ras::Float64, dec::Float64)
+    eqec06(day1::AbstractFloat, day2::AbstractFloat, ras::AbstractFloat, dec::AbstractFloat)
     
 Transformation from ICRS equatorial coordinates to ecliptic
 coordinates (mean equinox and ecliptic of date) using IAU 2006
@@ -158,13 +158,13 @@ precession model.
    equinox and ecliptic of date), with only frame bias (always less
    than 25 mas) to disturb this classical picture.
 """
-function eqec06(day1::Float64, day2::Float64, ras::Float64, dec::Float64)
+function eqec06(day1::AbstractFloat, day2::AbstractFloat, ras::AbstractFloat, dec::AbstractFloat)
     @inline lon, lat = c2s(ecm06(day1, day2)*s2c(ras, dec))
     (lon = anp(lon), lat = anpm(lat))
 end
 
 """
-    lteceq(epoch::Float64, lon::Float64, lat::Float64)
+    lteceq(epoch::AbstractFloat, lon::AbstractFloat, lat::AbstractFloat)
 
 Transformation from ecliptic coordinates (mean equinox and ecliptic of
 date) to ICRS RA,Dec, using a long-term precession model.
@@ -207,13 +207,13 @@ Vondrak, J., Capitaine, N. and Wallace, P., 2012, New precession
 expressions, valid for long time intervals (Corrigendum),
 Astron.Astrophys. 541, C1
 """
-function lteceq(epoch::Float64, lon::Float64, lat::Float64)
+function lteceq(epoch::AbstractFloat, lon::AbstractFloat, lat::AbstractFloat)
     @inline ras, dec = c2s(ltecm(epoch)'*s2c(lon, lat))
     (RA = anp(ras), Dec = anpm(dec))
 end
 
 """
-    ltecm(epoch::Float64)
+    ltecm(epoch::AbstractFloat)
 
 ICRS equatorial to ecliptic rotation matrix, long-term.
 
@@ -260,9 +260,9 @@ Vondrak, J., Capitaine, N. and Wallace, P., 2012, New precession
 expressions, valid for long time intervals (Corrigendum),
 Astron.Astrophys. 541, C1
 """
-function ltecm(epoch::Float64)
+function ltecm(epoch::AbstractFloat)
     #  Bias vector
-    bias = [η0_2010, -ϵ0_2010, -dα0_2010]
+    bias = SVector(η0_2010, -ϵ0_2010, -dα0_2010)
 
     #  Equatorial and ecliptic poles
     @inline equ, ecl = ltpequ(epoch), ltpecl(epoch)
@@ -273,7 +273,7 @@ function ltecm(epoch::Float64)
 end
 
 """
-    lteqec(epoch::Float64, ras::Float64, dec::Float64)
+    lteqec(epoch::AbstractFloat, ras::AbstractFloat, dec::AbstractFloat)
 
 Transformation from ICRS equatorial coordinates to ecliptic
 coordinates (mean equinox and ecliptic of date) using a long-term
@@ -317,7 +317,7 @@ Vondrak, J., Capitaine, N. and Wallace, P., 2012, New precession
 expressions, valid for long time intervals (Corrigendum),
 Astron.Astrophys. 541, C1
 """
-function lteqec(epoch::Float64, ras::Float64, dec::Float64)
+function lteqec(epoch::AbstractFloat, ras::AbstractFloat, dec::AbstractFloat)
     @inline lon, lat = c2s(ltecm(epoch)*s2c(ras, dec))
     (lon = anp(lon), lat = anpm(lat))
 end

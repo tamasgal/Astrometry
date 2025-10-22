@@ -9,7 +9,7 @@ Earth rotation angle (IAU 2000)
 """
 function iau_2000_earth_rotation(date)
     
-    rem2pi(mod(date) + Polynomial(era_2000, :Δt)(date - JD2000))
+    rem2pi(mod(date) + Polynomial(era_2000...)(date - JD2000))
 end
 
 function iau_2000_equinox_complement(date)
@@ -17,12 +17,12 @@ function iau_2000_equinox_complement(date)
     Δt = (date - JD2000)/(100*DAYPERYEAR)
 
     ϕ = deg2rad.(rem.([
-        Polynomial(l0_2003A, :Δt)(Δt), Polynomial(l1_2003A, :Δt)(Δt),
-        Polynomial( F_2003A, :Δt)(Δt), Polynomial( D_2000A, :Δt)(Δt),
-        Polynomial( Ω_2003A, :Δt)(Δt)], ARCSECPER2PI)./3600)
+        Polynomial(l0_2003A...)(Δt), Polynomial(l1_2003A...)(Δt),
+        Polynomial( F_2003A...)(Δt), Polynomial( D_2000A...)(Δt),
+        Polynomial( Ω_2003A...)(Δt)], ARCSECPER2PI)./3600)
     append!(ϕ, [
-        Polynomial( lve_2003, :Δt)(Δt), Polynomial( lea_2003, :Δt)(Δt),
-        Polynomial( lge_2003, :Δt)(Δt)])
+        Polynomial( lve_2003...)(Δt), Polynomial( lea_2003...)(Δt),
+        Polynomial( lge_2003...)(Δt)])
     
     en0 = vcat([t.n' for t in iau_2000_equinox_0_series]...)
     ea0 = vcat([t.a' for t in iau_2000_equinox_0_series]...)
@@ -101,9 +101,9 @@ function iau_2000_precession(date)
 
     Δt = (date - JD2000)/(100*DAYPERYEAR)
     
-    ψ = Polynomial(ψ_1977, :Δt)(Δt) + ψ_corr_2000*Δt
-    ϵ = Polynomial(ω_1977, :Δt)(Δt) + ϵ_corr_2000*Δt
-    χ  = Polynomial(χ_1977, :Δt)(Δt)
+    ψ = Polynomial(ψ_1977...)(Δt) + ψ_corr_2000*Δt
+    ϵ = Polynomial(ω_1977...)(Δt) + ϵ_corr_2000*Δt
+    χ  = Polynomial(χ_1977...)(Δt)
 
     deg2rad(1/3600).*(ψ, ϵ, χ)
 end
@@ -136,9 +136,9 @@ function iau_2000a_nutation(date)
     
     # Fundamental (Delauney) arguments
     ϕ = deg2rad.(rem.(
-        [Polynomial(l0_2003A, :Δt)(Δt), Polynomial(l1_2000A, :Δt)(Δt),
-         Polynomial( F_2003A, :Δt)(Δt), Polynomial( D_2000A, :Δt)(Δt),
-         Polynomial( Ω_2003A, :Δt)(Δt)], ARCSECPER2PI)/3600)
+        [Polynomial(l0_2003A...)(Δt), Polynomial(l1_2000A...)(Δt),
+         Polynomial( F_2003A...)(Δt), Polynomial( D_2000A...)(Δt),
+         Polynomial( Ω_2003A...)(Δt)], ARCSECPER2PI)/3600)
 
     lϕ  = rem2pi.(vcat([t.n' for t in iau_2000A_nutation_lunisolar_series]...)*ϕ, RoundToZero)
     la  = vcat([t.a' for t in iau_2000A_nutation_lunisolar_series]...)
@@ -148,13 +148,13 @@ function iau_2000a_nutation(date)
     ###  Planetary Nutation
 
     ϕ = rem2pi.([
-        Polynomial(l0_2000A_planet, :Δt)(Δt), Polynomial( F_2000A_planet, :Δt)(Δt),
-        Polynomial( D_2000A_planet, :Δt)(Δt), Polynomial( Ω_2000A_planet, :Δt)(Δt),
-        Polynomial(lme_2003, :Δt)(Δt), Polynomial(lve_2003, :Δt)(Δt),
-        Polynomial(lea_2003, :Δt)(Δt), Polynomial(lma_2003, :Δt)(Δt),
-        Polynomial(lju_2003, :Δt)(Δt), Polynomial(lsa_2003, :Δt)(Δt),
-        Polynomial(lur_2003, :Δt)(Δt), Polynomial(lne_2003mhb, :Δt)(Δt)], RoundToZero)
-    push!(ϕ, Polynomial(lge_2003, :Δt)(Δt))
+        Polynomial(l0_2000A_planet...)(Δt), Polynomial( F_2000A_planet...)(Δt),
+        Polynomial( D_2000A_planet...)(Δt), Polynomial( Ω_2000A_planet...)(Δt),
+        Polynomial(lme_2003...)(Δt), Polynomial(lve_2003...)(Δt),
+        Polynomial(lea_2003...)(Δt), Polynomial(lma_2003...)(Δt),
+        Polynomial(lju_2003...)(Δt), Polynomial(lsa_2003...)(Δt),
+        Polynomial(lur_2003...)(Δt), Polynomial(lne_2003mhb...)(Δt)], RoundToZero)
+    push!(ϕ, Polynomial(lge_2003...)(Δt))
 
     pϕ = rem2pi.(vcat([t.n' for t in iau_2000A_nutation_planetary_series]...)*ϕ, RoundToZero)
     pa = vcat([t.a' for t in iau_2000A_nutation_planetary_series]...)
@@ -188,9 +188,9 @@ function iau_2000b_nutation(date)
     ###  Luni-solar Nutation
     
     # Fundamental (Delauney) arguments from Simon et al. (1994)
-    ϕ = deg2rad(1/3600).*rem.([Polynomial(l0_2000B, :Δt)(Δt),
-        Polynomial(l1_2000B, :Δt)(Δt), Polynomial( F_2000B, :Δt)(Δt),
-        Polynomial( D_2000B, :Δt)(Δt), Polynomial( Ω_2000B, :Δt)(Δt)], ARCSECPER2PI)
+    ϕ = deg2rad(1/3600).*rem.([Polynomial(l0_2000B...)(Δt),
+        Polynomial(l1_2000B...)(Δt), Polynomial( F_2000B...)(Δt),
+        Polynomial( D_2000B...)(Δt), Polynomial( Ω_2000B...)(Δt)], ARCSECPER2PI)
 
     lϕ = rem2pi.(vcat([t.n' for t in iau_2000B_nutation_lunisolar_series]...)*ϕ, RoundToZero)
     la = vcat([t.a' for t in iau_2000B_nutation_lunisolar_series]...)

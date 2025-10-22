@@ -1,7 +1,7 @@
 ####    Astronomy / Ephemerides    ####
 
 """
-    epv00(day1::Float64, day2::Float64)
+    epv00(day1::AbstractFloat, day2::AbstractFloat)
 
 Earth position and velocity, heliocentric and barycentric, with
 respect to the Barycentric Celestial Reference System.
@@ -88,35 +88,35 @@ respect to the Barycentric Celestial Reference System.
 5) It is permissible to use the same array for pvh and pvb, which will
    receive the barycentric values.
 """
-function epv00(day1::Float64, day2::Float64)
+function epv00(day1::AbstractFloat, day2::AbstractFloat)
     Δt = ((day1 - JD2000) + day2)/DAYPERYEAR
     @assert abs(Δt) <= 100.0 "Julian day is not between 1990 and 2100."
 
     # Sun to Earth ecliptic vector
-    p_heli = iau_2000_bcrs *
-        [ephem_position(sun_earth_x_0, sun_earth_x_1, sun_earth_x_2, Δt),
+    p_heli = iau_2000_bcrs * SVector(
+         ephem_position(sun_earth_x_0, sun_earth_x_1, sun_earth_x_2, Δt),
          ephem_position(sun_earth_y_0, sun_earth_y_1, sun_earth_y_2, Δt),
-         ephem_position(sun_earth_z_0, sun_earth_z_1, sun_earth_z_2, Δt)]
-    v_heli = iau_2000_bcrs *
-        [ephem_velocity(sun_earth_x_0, sun_earth_x_1, sun_earth_x_2, Δt),
+         ephem_position(sun_earth_z_0, sun_earth_z_1, sun_earth_z_2, Δt))
+    v_heli = iau_2000_bcrs * SVector(
+         ephem_velocity(sun_earth_x_0, sun_earth_x_1, sun_earth_x_2, Δt),
          ephem_velocity(sun_earth_y_0, sun_earth_y_1, sun_earth_y_2, Δt),
-         ephem_velocity(sun_earth_z_0, sun_earth_z_1, sun_earth_z_2, Δt)]
+         ephem_velocity(sun_earth_z_0, sun_earth_z_1, sun_earth_z_2, Δt))
 
     # Barycenter to Earth ecliptic vector
-    p_bary = p_heli .+ iau_2000_bcrs *
-        [ephem_position(bary_sun_x_0, bary_sun_x_1, bary_sun_x_2, Δt),
+    p_bary = p_heli .+ iau_2000_bcrs * SVector(
+         ephem_position(bary_sun_x_0, bary_sun_x_1, bary_sun_x_2, Δt),
          ephem_position(bary_sun_y_0, bary_sun_y_1, bary_sun_y_2, Δt),
-         ephem_position(bary_sun_z_0, bary_sun_z_1, bary_sun_z_2, Δt)]
-    v_bary = v_heli .+ iau_2000_bcrs *
-        [ephem_velocity(bary_sun_x_0, bary_sun_x_1, bary_sun_x_2, Δt),
+         ephem_position(bary_sun_z_0, bary_sun_z_1, bary_sun_z_2, Δt))
+    v_bary = v_heli .+ iau_2000_bcrs * SVector(
+         ephem_velocity(bary_sun_x_0, bary_sun_x_1, bary_sun_x_2, Δt),
          ephem_velocity(bary_sun_y_0, bary_sun_y_1, bary_sun_y_2, Δt),
-         ephem_velocity(bary_sun_z_0, bary_sun_z_1, bary_sun_z_2, Δt)]
+         ephem_velocity(bary_sun_z_0, bary_sun_z_1, bary_sun_z_2, Δt))
 
-    (helio = [p_heli, v_heli], bary = [p_bary, v_bary])
+    (helio = SVector(p_heli, v_heli), bary = SVector(p_bary, v_bary))
 end
 
 """
-    moon98(day1::Float64, day2::Float64)
+    moon98(day1::AbstractFloat, day2::AbstractFloat)
 
 Approximate geocentric position and velocity of the Moon.
 
@@ -192,79 +192,79 @@ p337.
 Simon, J.L., Bretagnon, P., Chapront, J., Chapront-Touze, M., Francou,
 G. & Laskar, J., Astron.Astrophys., 1994, 282, 663
 """
-function moon98(day1::Float64, day2::Float64)
+function moon98(day1::AbstractFloat, day2::AbstractFloat)
     Δt = ((day1 - JD2000) + day2)/(100*DAYPERYEAR)
 
     #  Arguments (radians) and derivatives (radians per Julian century).
     
     #  Moon's mean longitude.
-    λm  = deg2rad(rem(Polynomial(λmoon_1994, :Δt)(Δt), 360.0))
-    dλm = deg2rad(Polynomial([1., 2., 3., 4.].*λmoon_1994[2:5], :Δt)(Δt))
+    λm  = deg2rad(rem(Polynomial(λmoon_1994...)(Δt), 360.0))
+    dλm = deg2rad(Polynomial(SVector(1., 2., 3., 4.).*λmoon_1994[2:5]...)(Δt))
     
     #  Moon's mean elongation.
-    dm  = deg2rad(rem(Polynomial(dmoon_1998, :Δt)(Δt), 360.0))
-    ddm = deg2rad(Polynomial([1., 2., 3., 4.].*dmoon_1998[2:5], :Δt)(Δt))
+    dm  = deg2rad(rem(Polynomial(dmoon_1998...)(Δt), 360.0))
+    ddm = deg2rad(Polynomial(SVector(1., 2., 3., 4.).*dmoon_1998[2:5]...)(Δt))
 
     #  Sun's mean anomaly.
-    ls  = deg2rad(rem(Polynomial(lsun_1998, :Δt)(Δt), 360.0))
-    dls = deg2rad(Polynomial([1., 2., 3., 4.].*lsun_1998[2:5], :Δt)(Δt))
+    ls  = deg2rad(rem(Polynomial(lsun_1998...)(Δt), 360.0))
+    dls = deg2rad(Polynomial(SVector(1., 2., 3., 4.).*lsun_1998[2:5]...)(Δt))
 
     #  Moon's mean anomaly.
-    lm  = deg2rad(rem(Polynomial(lmoon_1998, :Δt)(Δt), 360.0))
-    dlm = deg2rad(Polynomial([1., 2., 3., 4.].*lmoon_1998[2:5], :Δt)(Δt))
+    lm  = deg2rad(rem(Polynomial(lmoon_1998...)(Δt), 360.0))
+    dlm = deg2rad(Polynomial(SVector(1., 2., 3., 4.).*lmoon_1998[2:5]...)(Δt))
 
     #  Mean distance of the Moon from its ascending node.
-    fm  = deg2rad(rem(Polynomial(fmoon_1998, :Δt)(Δt), 360.0))
-    dfm = deg2rad(Polynomial([1., 2., 3., 4.].*fmoon_1998[2:5], :Δt)(Δt))
+    fm  = deg2rad(rem(Polynomial(fmoon_1998...)(Δt), 360.0))
+    dfm = deg2rad(Polynomial(SVector(1., 2., 3., 4.).*fmoon_1998[2:5]...)(Δt))
 
     #  Meeus further arguments.
-    a1, da1 = deg2rad.([Polynomial(a_1, :Δt)(Δt), a_1[2]])
-    a2, da2 = deg2rad.([Polynomial(a_2, :Δt)(Δt), a_2[2]])
-    a3, da3 = deg2rad.([Polynomial(a_3, :Δt)(Δt), a_3[2]])
+    a1, da1 = deg2rad.(SVector(Polynomial(a_1...)(Δt), a_1[2]))
+    a2, da2 = deg2rad.(SVector(Polynomial(a_2...)(Δt), a_2[2]))
+    a3, da3 = deg2rad.(SVector(Polynomial(a_3...)(Δt), a_3[2]))
 
     #  E-factor
-    e  = Polynomial(efac, :Δt)(Δt)
-    de = Polynomial([1., 2.].*efac[2:3], :Δt)(Δt)
+    e  = Polynomial(efac...)(Δt)
+    de = Polynomial(SVector(1., 2.).*efac[2:3]...)(Δt)
 
     #  Arange matrices for vector operations.
-    ln  = vcat([l.n' for l in lr_1998]...)
-    la  = vcat([l.a' for l in lr_1998]...)
+    ln  = vcat([SMatrix{1, length(l.n)}(l.n) for l in lr_1998]...)
+    la  = vcat([SMatrix{1, length(l.a)}(l.a) for l in lr_1998]...)
     lre  = [abs(m) == 2 ? e*e    : (abs(m) == 1 ? e  : 1.) for m in ln[:,2]]
     dlre = [abs(m) == 2 ? 2*e*de : (abs(m) == 1 ? de : 0.) for m in ln[:,2]]
 
-    bn   = vcat([b.n' for b in b_1998]...)
-    ba   = vcat([b.a' for b in b_1998]...)
-    bne  = [abs(m) == 2 ? e*e    : (abs(m) == 1 ? e  : 1.) for m in bn[:,2]]
-    dbne = [abs(m) == 2 ? 2*e*de : (abs(m) == 1 ? de : 0.) for m in bn[:,2]]
+    bn   = vcat([SMatrix{1, length(b.n)}(b.n) for b in b_1998]...)
+    ba   = vcat([SMatrix{1, length(b.a)}(b.a) for b in b_1998]...)
+    bne  = SVector((abs(m) == 2 ? e*e    : (abs(m) == 1 ? e  : 1.) for m in bn[:,2])...)
+    dbne = SVector((abs(m) == 2 ? 2*e*de : (abs(m) == 1 ? de : 0.) for m in bn[:,2])...)
 
-    ϕ, dϕ = ln*[dm, ls, lm, fm], ln*[ddm, dls, dlm, dfm]
-    ψ, dψ = [a1, λm-fm, a2], [da1, dλm-dfm, da2]
-    ζ, dζ  = bn*[dm, ls, lm, fm], bn*[ddm, dls, dlm, dfm]
-    η     = [λm, a3, a1-fm, a1+fm, λm-lm, λm+lm]
-    dη    = [dλm, da3, da1-dfm, da1+dfm, dλm-dlm, dλm+dlm]
+    ϕ, dϕ = ln*SVector(dm, ls, lm, fm), ln*SVector(ddm, dls, dlm, dfm)
+    ψ, dψ = SVector(a1, λm-fm, a2), SVector(da1, dλm-dfm, da2)
+    ζ, dζ  = bn*SVector(dm, ls, lm, fm), bn*SVector(ddm, dls, dlm, dfm)
+    η     = SVector(λm, a3, a1-fm, a1+fm, λm-lm, λm+lm)
+    dη    = SVector(dλm, da3, da1-dfm, da1+dfm, dλm-dlm, dλm+dlm)
 
     #  Longitude, latitude, and distance plus derivatives
-    λ::Float64  =  λm  + deg2rad(sum(a_l.*sin.(ψ)) + sum(la[:,1].*lre.*sin.(ϕ)))
-    dλ::Float64 = (dλm + deg2rad(sum(a_l.*dψ.*cos.(ψ)) +
+    λ  =  λm  + deg2rad(sum(a_l.*sin.(ψ)) + sum(la[:,1].*lre.*sin.(ϕ)))
+    dλ = (dλm + deg2rad(sum(a_l.*dψ.*cos.(ψ)) +
                         sum(la[:,1].*(dlre.*sin.(ϕ) .+ lre.*dϕ.*cos.(ϕ))))) /
                         (100*DAYPERYEAR)
-    b::Float64  = deg2rad(sum(a_b.*sin.(η)) + sum(ba[:,1].*bne.*sin.(ζ)))
-    db::Float64 = deg2rad(sum(a_b.*dη.*cos.(η)) +
+    b  = deg2rad(sum(a_b.*sin.(η)) + sum(ba[:,1].*bne.*sin.(ζ)))
+    db = deg2rad(sum(a_b.*dη.*cos.(η)) +
                  sum(ba[:,1].*(dbne.*sin.(ζ) .+ bne.*dζ.*cos.(ζ))))/(100*DAYPERYEAR)
-    r::Float64  = (r0 + sum(la[:,2].*lre.*cos.(ϕ)))/ASTRUNIT
-    dr::Float64 = sum(la[:,2].*(dlre.*cos.(ϕ) .- lre.*dϕ.*sin.(ϕ)))/(ASTRUNIT*100*DAYPERYEAR)
+    r  = (r0 + sum(la[:,2].*lre.*cos.(ϕ)))/ASTRUNIT
+    dr = sum(la[:,2].*(dlre.*cos.(ϕ) .- lre.*dϕ.*sin.(ϕ)))/(ASTRUNIT*100*DAYPERYEAR)
 
     #  IAU 2006 Fukashima-Williams bias+precession angles
     γB, ϕB, ψB, ϵA = pfw06(day1, day2)
     #  Rotate the Moon position and velocity into GCRS (Note 6).
     R, pv = Rz(-γB)*Rx(-ϕB)*Rz(ψB), s2pv(λ, b, r, dλ, db, dr)
-    [R*pv[1], R*pv[2]]
+    SVector(R*pv[1], R*pv[2])
 end
 
 const KMAX = 10
 
 """
-    plan94(day1::Float64, day2::Float64, planet::Int)
+    plan94(day1::AbstractFloat, day2::AbstractFloat, planet::Integer)
 
 Approximate heliocentric position and velocity of a nominated major
 planet: Mercury, Venus, EMB, Mars, Jupiter, Saturn, Uranus or Neptune
@@ -412,7 +412,7 @@ n.b. Not IAU-endorsed and without canonical status.
 Simon, J.L, Bretagnon, P., Chapront, J., Chapront-Touze, M., Francou,
 G., and Laskar, J., Astron.Astrophys., 282, 663 (1994).
 """
-function plan94(day1::Float64, day2::Float64, planet::Int)
+function plan94(day1::AbstractFloat, day2::AbstractFloat, planet::Integer)
     @assert 1 <= planet <= 9 "Invalid planet: valid range is [1-9]"
     Δt = ((day1 - JD2000) + day2)/(1000*DAYPERYEAR)
     @assert abs(Δt) <= 1.0 "Invalid date: valid range is +/-1000 years"
@@ -420,21 +420,21 @@ function plan94(day1::Float64, day2::Float64, planet::Int)
     #  Compute the mean elements.
     μ = 0.35953620*Δt
 
-    a = Polynomial(a_1994[planet,:], :Δt)(Δt) + 1e-7 * 
+    a = Polynomial(a_1994[planet,:]...)(Δt) + 1e-7 * 
         (sum(a_cos_1994[planet,1:8].*cos.(p_1994[planet,1:8].*μ) .+
              a_sin_1994[planet,1:8].*sin.(p_1994[planet,1:8].*μ)) + 
          (a_cos_1994[planet,9]*cos(p_1994[planet,9]*μ) +
           a_sin_1994[planet,9]*sin(p_1994[planet,9]*μ))*Δt)
-    λ = deg2rad(Polynomial([3600., 1., 1.].*λ_1994[planet,:], :Δt)(Δt)/3600.) + 1e-7 *
+    λ = deg2rad(Polynomial(((3600., 1., 1.).*λ_1994[planet,:])...)(Δt)/3600.) + 1e-7 *
         (sum(λ_cos_1994[planet,1:8].*cos.(q_1994[planet,1:8].*μ) .+
              λ_sin_1994[planet,1:8].*sin.(q_1994[planet,1:8].*μ)) +
          sum(λ_cos_1994[planet,9:10].*cos.(q_1994[planet,9:10].*μ) .+
              λ_sin_1994[planet,9:10].*sin.(q_1994[planet,9:10].*μ))*Δt)
-    e = Polynomial(e_1994[planet,:], :Δt)(Δt)
-    p = rem2pi(deg2rad(Polynomial([3600., 1., 1.].*π_1994[planet,:], :Δt)(Δt)/3600.),
+    e = Polynomial(e_1994[planet,:]...)(Δt)
+    p = rem2pi(deg2rad(Polynomial(((3600., 1., 1.).*π_1994[planet,:])...)(Δt)/3600.),
                RoundToZero)
-    i = deg2rad(Polynomial([3600., 1., 1.].*i_1994[planet,:], :Δt)(Δt)/3600.)
-    ω = rem2pi(deg2rad(Polynomial([3600., 1., 1.].*ω_1994[planet,:], :Δt)(Δt)/3600.),
+    i = deg2rad(Polynomial(((3600., 1., 1.).*i_1994[planet,:])...)(Δt)/3600.)
+    ω = rem2pi(deg2rad(Polynomial(((3600., 1., 1.).*ω_1994[planet,:])...)(Δt)/3600.),
                RoundToZero)
 
     #  Iterative solution of Kepler's equation to get eccentric anomaly.
@@ -469,6 +469,6 @@ function plan94(day1::Float64, day2::Float64, planet::Int)
     vz =  v*2*cos(i/2)*sin(i/2)*(sin(ω)*xms + cos(ω)*xmc)
 
     #  Rotate to equatorial.
-    [[px, COSEPS*py - SINEPS*pz, SINEPS*py + COSEPS*pz],
-     [vx, COSEPS*vy - SINEPS*vz, SINEPS*vy + COSEPS*vz]]
+    SVector(SVector(px, COSEPS*py - SINEPS*pz, SINEPS*py + COSEPS*pz),
+            SVector(vx, COSEPS*vy - SINEPS*vz, SINEPS*vy + COSEPS*vz))
 end

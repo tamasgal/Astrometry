@@ -1,52 +1,52 @@
 #   IAU 2000A Model
 
 #   Mean anomaly of the Sun in μas (Matthews et al. 2000)
-const l1_2000A = [1287104.79305, 129596581.0481, -0.5532, 0.000136, -0.00001149]
+const l1_2000A = (1287104.79305, 129596581.0481, -0.5532, 0.000136, -0.00001149)
 #   Mean anomaly of the Sun in μas (IERS 2003)
-const l1_2003A = [1287104.793048, 129596581.0481, - 0.5532, 0.000136, -0.00001149]
+const l1_2003A = (1287104.793048, 129596581.0481, - 0.5532, 0.000136, -0.00001149)
 #   Mean elongation of the Moon from the Sun in μas (Matthews et al. 2000)
-const D_2000A = [1072260.70369, 1602961601.2090, -6.3706, 0.006593, -0.00003169] 
+const D_2000A = (1072260.70369, 1602961601.2090, -6.3706, 0.006593, -0.00003169)
 #   Mean elongation of the Moon from the Sun in μas (IERS 2003)
-const D_2003A = [1072260.703692, 1602961601.2090, -6.3706, 0.006593, -0.00003169] 
+const D_2003A = (1072260.703692, 1602961601.2090, -6.3706, 0.006593, -0.00003169)
 #   Mean anomaly of the Moon in μas (IERS 2003)
-const l0_2003A = [485868.249036, 1717915923.2178, 31.8792, 0.051635, -0.00024470]
+const l0_2003A = (485868.249036, 1717915923.2178, 31.8792, 0.051635, -0.00024470)
 #   Mean longitude of the Moon minus that of the ascending node in μas (IERS 2003)
-const F_2003A = [335779.526232, 1739527262.8478, -12.7512, -0.001037, 0.00000417]
+const F_2003A = (335779.526232, 1739527262.8478, -12.7512, -0.001037, 0.00000417)
 #   Mean longitude of the Moon ascending node on the ecliptic (IERS 2003)
-const Ω_2003A = [450160.398036, -6962890.5431, 7.4722, 0.007702, -0.00005939]
+const Ω_2003A = (450160.398036, -6962890.5431, 7.4722, 0.007702, -0.00005939)
 
 #   See Matthews et al. 2000
 #   Mean anomaly of the Moon
-const l0_2000A_planet = [2.35555598, 8328.6914269554]
+const l0_2000A_planet = (2.35555598, 8328.6914269554)
 #   Mean longitude of the Moon minus that of the ascending node
-const F_2000A_planet = [1.627905234, 8433.466158131]
+const F_2000A_planet = (1.627905234, 8433.466158131)
 #   Mean elongation of the Moon from the Sun
-const D_2000A_planet = [5.198466741, 7771.3771468121]
+const D_2000A_planet = (5.198466741, 7771.3771468121)
 #   Mean longitude of the ascending node of the Moon
-const Ω_2000A_planet = [2.18243920, -33.757045]
+const Ω_2000A_planet = (2.18243920, -33.757045)
 
 #   Mean longitude of Mercury (IERS 2003)
-const lme_2003 = [4.402608842, 2608.7903141574]
+const lme_2003 = (4.402608842, 2608.7903141574)
 #   Mean longitude of Venus (IERS 2003)
-const lve_2003 = [3.176146697, 1021.3285546211]
+const lve_2003 = (3.176146697, 1021.3285546211)
 #   Mean longitude of Earth (IERS 2003)
-const lea_2003 = [1.753470314, 628.3075849991]
+const lea_2003 = (1.753470314, 628.3075849991)
 #   Mean longitude of Mars (IERS 2003)
-const lma_2003 = [6.203480913, 334.0612426700]
+const lma_2003 = (6.203480913, 334.0612426700)
 #   Mean longitude of Jupiter (IERS 2003)
-const lju_2003 = [0.599546497, 52.9690962641]
+const lju_2003 = (0.599546497, 52.9690962641)
 #   Mean longitude of Saturn (IERS 2003)
-const lsa_2003 = [0.874016757, 21.3299104960]
+const lsa_2003 = (0.874016757, 21.3299104960)
 #   Mean longitude of Uranus (IERS 2003)
-const lur_2003 = [5.481293872, 7.4781598567]
+const lur_2003 = (5.481293872, 7.4781598567)
 #   Mean longitude of Neptune (IERS 2003)
-const lne_2003 = [5.311886287, 3.8133035638]
+const lne_2003 = (5.311886287, 3.8133035638)
 #   Mean longitude of Neptune (Matthews et al. 2000)
-const lne_2003mhb = [5.321159000, 3.8127774000]
+const lne_2003mhb = (5.321159000, 3.8127774000)
 #   General accumulated precession in longitude (IERS 2003)
-const lge_2003 = [0.0, 0.024381750, 0.00000538691]
+const lge_2003 = (0.0, 0.024381750, 0.00000538691)
 
-const sp_2000A = [94.00e-6, 3808.35e-6, -119.94e-6, -72574.09e-6, 27.70e-6, 15.61e-6]
+const sp_2000A = (94.00e-6, 3808.35e-6, -119.94e-6, -72574.09e-6, 27.70e-6, 15.61e-6)
 
 #   Terms of order T^0
 const s0_2000A = [

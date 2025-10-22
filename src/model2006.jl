@@ -20,11 +20,15 @@ function iau_2006_cio_locator(date, coord)
 
     Δt = (date - JD2000)/(100*DAYPERYEAR)
 
-    ϕ = deg2rad.(rem.([Polynomial(l0_2003A, :Δt)(Δt),
-        Polynomial(l1_2003A, :Δt)(Δt), Polynomial( F_2003A, :Δt)(Δt),
-        Polynomial( D_2003A, :Δt)(Δt), Polynomial( Ω_2003A, :Δt)(Δt)], ARCSECPER2PI)/3600)
-    append!(ϕ, [mod2pi(Polynomial(lve_2003, :Δt)(Δt)),
-                mod2pi(Polynomial(lea_2003, :Δt)(Δt)), Polynomial(lge_2003, :Δt)(Δt)])
+    ϕ = SVector(
+        deg2rad.(rem.(Polynomial(l0_2003A...)(Δt), ARCSECPER2PI)/3600),
+        deg2rad.(rem.(Polynomial(l1_2003A...)(Δt), ARCSECPER2PI)/3600),
+        deg2rad.(rem.(Polynomial( F_2003A...)(Δt), ARCSECPER2PI)/3600),
+        deg2rad.(rem.(Polynomial( D_2003A...)(Δt), ARCSECPER2PI)/3600),
+        deg2rad.(rem.(Polynomial( Ω_2003A...)(Δt), ARCSECPER2PI)/3600),
+        mod2pi(Polynomial(lve_2003...)(Δt)),
+        mod2pi(Polynomial(lea_2003...)(Δt)),
+        Polynomial(lge_2003...)(Δt))
 
     ϕ0 = vcat([t.n' for t in iau_2006_equinox_0_series]...)*ϕ
     a0 = vcat([t.a' for t in iau_2006_equinox_0_series]...)
@@ -37,12 +41,12 @@ function iau_2006_cio_locator(date, coord)
     ϕ4 = vcat([t.n' for t in iau_2006_equinox_4_series]...)*ϕ
     a4 = vcat([t.a' for t in iau_2006_equinox_4_series]...)
 
-    deg2rad(Polynomial(cio_s_2006 .+ [
+    deg2rad(Polynomial(cio_s_2006 .+ SVector(
         sum(a0[:,1].*sin.(ϕ0) .+ a0[:,2].*cos.(ϕ0)),
         sum(a1[:,1].*sin.(ϕ1) .+ a1[:,2].*cos.(ϕ1)),
         sum(a2[:,1].*sin.(ϕ2) .+ a2[:,2].*cos.(ϕ2)),
         sum(a3[:,1].*sin.(ϕ3) .+ a3[:,2].*cos.(ϕ3)),
-        sum(a4[:,1].*sin.(ϕ4) .+ a4[:,2].*cos.(ϕ4)), 0.0], :Δt)(Δt)/3600) -
+        sum(a4[:,1].*sin.(ϕ4) .+ a4[:,2].*cos.(ϕ4)), 0.0)...)(Δt)/3600) -
             coord[1]*coord[2]/2
 end
 
@@ -51,32 +55,31 @@ function iau_2006_cip_xy(date)
     Δt = (date - JD2000)/(100*DAYPERYEAR)
 
     #  lunar, solar, and planetary longitudes
-    ϕ = deg2rad(1/3600).*rem.([
-        Polynomial(l0_2003A, :Δt)(Δt),
-        Polynomial(l1_2003A, :Δt)(Δt),
-        Polynomial( F_2003A, :Δt)(Δt),
-        Polynomial( D_2003A, :Δt)(Δt),
-        Polynomial( Ω_2003A, :Δt)(Δt)], ARCSECPER2PI)
-    append!(ϕ, [
-        Polynomial( lme_2003, :Δt)(Δt),
-        Polynomial( lve_2003, :Δt)(Δt),
-        Polynomial( lea_2003, :Δt)(Δt),
-        Polynomial( lma_2003, :Δt)(Δt),
-        Polynomial( lju_2003, :Δt)(Δt),
-        Polynomial( lsa_2003, :Δt)(Δt),
-        Polynomial( lur_2003, :Δt)(Δt),
-        Polynomial( lne_2003, :Δt)(Δt),
-        Polynomial( lge_2003, :Δt)(Δt)])
+    ϕ = SVector(
+        deg2rad(1/3600).*rem.(Polynomial(l0_2003A...)(Δt), ARCSECPER2PI),
+        deg2rad(1/3600).*rem.(Polynomial(l1_2003A...)(Δt), ARCSECPER2PI),
+        deg2rad(1/3600).*rem.(Polynomial( F_2003A...)(Δt), ARCSECPER2PI),
+        deg2rad(1/3600).*rem.(Polynomial( D_2003A...)(Δt), ARCSECPER2PI),
+        deg2rad(1/3600).*rem.(Polynomial( Ω_2003A...)(Δt), ARCSECPER2PI),
+        Polynomial( lme_2003...)(Δt),
+        Polynomial( lve_2003...)(Δt),
+        Polynomial( lea_2003...)(Δt),
+        Polynomial( lma_2003...)(Δt),
+        Polynomial( lju_2003...)(Δt),
+        Polynomial( lsa_2003...)(Δt),
+        Polynomial( lur_2003...)(Δt),
+        Polynomial( lne_2003...)(Δt),
+        Polynomial( lge_2003...)(Δt))
     
     #  polynomial part of precession-nutation
-    xypr = [sum(Polynomial(cip_x_2006, :Δt)(Δt)),
-            sum(Polynomial(cip_y_2006, :Δt)(Δt))]
+    xypr = SVector(sum(Polynomial(cip_x_2006...)(Δt)),
+                   sum(Polynomial(cip_y_2006...)(Δt)))
 
     # !!! The following code can be improved by rearranging the data arrays.
 
-    jaxy = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1] .+ 1
-    jasc = [0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0] .+ 1
-    japt = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
+    jaxy = SVector(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1) .+ 1
+    jasc = SVector(0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0) .+ 1
+    japt = SVector(0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4)
 
     #  nutation periodic terms, planetary
     xypl = [0.0, 0.0]
@@ -166,7 +169,7 @@ function iau_2006_gmst(date1, date2)
 
     Δt = (date2 - JD2000)/(100*DAYPERYEAR)
     
-    rem2pi(iau_era_2000(date1) + deg2rad(1/3600)*Polynomial(gmst_2006, :Δt)(Δt))
+    rem2pi(iau_era_2000(date1) + deg2rad(1/3600)*Polynomial(gmst_2006...)(Δt))
 end
 
 function iau_2006a_nutation(date)
@@ -181,15 +184,15 @@ function iau_2006_obliquity(date)
     
     Δt = (date - JD2000)/(100*DAYPERYEAR)
 
-    deg2rad(1/3600)*Polynomial(ϵB_2006, :Δt)(Δt)
+    deg2rad(1/3600)*Polynomial(ϵB_2006...)(Δt)
 end
 
 function iau_2006_precession(date)
 
     Δt = (date - JD2000)/(100*DAYPERYEAR)
 
-    deg2rad(1/3600).*(Polynomial(γB_2006, :Δt)(Δt), Polynomial(ϕB_2006, :Δt)(Δt),
-                      Polynomial(ψB_2006, :Δt)(Δt), Polynomial(ϵB_2006, :Δt)(Δt))
+    deg2rad(1/3600).*(Polynomial(γB_2006...)(Δt), Polynomial(ϕB_2006...)(Δt),
+                      Polynomial(ψB_2006...)(Δt), Polynomial(ϵB_2006...)(Δt))
 end
 
 function iau_2006_tdb_tt(date, ut1, eastlon, u, v)
@@ -201,11 +204,11 @@ function iau_2006_tdb_tt(date, ut1, eastlon, u, v)
     tsol = 2pi*rem(ut1, 1) + eastlon
 
     # Fundamental arguments (Simon et al. 1994)
-    ϵsun  = deg2rad(rem(Polynomial(ϵsun_1994, :Δt)(Δt/3600), 360))
-    ϵmsun = deg2rad(rem(Polynomial(ϵmsun_1994, :Δt)(Δt/3600), 360))
-    D     = deg2rad(rem(Polynomial(D_1994, :Δt)(Δt/3600), 360))
-    ϵju   = deg2rad(rem(Polynomial(ϵju_1994, :Δt)(Δt/3600), 360))
-    ϵsa   = deg2rad(rem(Polynomial(ϵsa_1994, :Δt)(Δt/3600), 360))
+    ϵsun  = deg2rad(rem(Polynomial(ϵsun_1994...)(Δt/3600), 360))
+    ϵmsun = deg2rad(rem(Polynomial(ϵmsun_1994...)(Δt/3600), 360))
+    D     = deg2rad(rem(Polynomial(D_1994...)(Δt/3600), 360))
+    ϵju   = deg2rad(rem(Polynomial(ϵju_1994...)(Δt/3600), 360))
+    ϵsa   = deg2rad(rem(Polynomial(ϵsa_1994...)(Δt/3600), 360))
 
     wt = sum(topo_1994 .* [
         u * sin(tsol + ϵsun - ϵsa),
@@ -219,17 +222,17 @@ function iau_2006_tdb_tt(date, ut1, eastlon, u, v)
         v * cos(ϵsun),
         u * sin(tsol)])
     
-    wf = Polynomial([
+    wf = Polynomial(SMatrix{1,5}(
         sum(tdb_tt_2003_0[1,:] .*
-            sin.(tdb_tt_2003_0[3,:] .+ tdb_tt_2003_0[2,:].*Δt))
+            sin.(tdb_tt_2003_0[3,:] .+ tdb_tt_2003_0[2,:].*Δt)),
         sum(tdb_tt_2003_1[1,:] .*
-            sin.(tdb_tt_2003_1[3,:] .+ tdb_tt_2003_1[2,:].*Δt))
+            sin.(tdb_tt_2003_1[3,:] .+ tdb_tt_2003_1[2,:].*Δt)),
         sum(tdb_tt_2003_2[1,:] .*
-            sin.(tdb_tt_2003_2[3,:] .+ tdb_tt_2003_2[2,:].*Δt))
+            sin.(tdb_tt_2003_2[3,:] .+ tdb_tt_2003_2[2,:].*Δt)),
         sum(tdb_tt_2003_3[1,:] .*
-            sin.(tdb_tt_2003_3[3,:] .+ tdb_tt_2003_3[2,:].*Δt))
+            sin.(tdb_tt_2003_3[3,:] .+ tdb_tt_2003_3[2,:].*Δt)),
         sum(tdb_tt_2003_4[1,:] .*
-            sin.(tdb_tt_2003_4[3,:] .+ tdb_tt_2003_4[2,:].*Δt))], :Δt)(Δt)
+            sin.(tdb_tt_2003_4[3,:] .+ tdb_tt_2003_4[2,:].*Δt)))...)(Δt)
     
     wj = sum(mass_plan_1994_0[1,:] .*
              sin.(mass_plan_1994_0[3,:] .+ mass_plan_1994_0[2,:].*Δt)) +

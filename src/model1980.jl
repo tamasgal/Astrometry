@@ -26,9 +26,9 @@ function iau_1980_nutation(date::AbstractFloat)
     Δt  = (date - JD2000)/(100*DAYPERYEAR)
     
     l = 2π*rem.([l0_1980t, l1_1980t, F_1980t, D_1980t, Ω_1980t].*Δt, 1.0) .+
-        deg2rad.([Polynomial(l0_1980, :Δt)(Δt), Polynomial(l1_1980, :Δt)(Δt),
-                  Polynomial( F_1980, :Δt)(Δt), Polynomial( D_1980, :Δt)(Δt),
-                  Polynomial( Ω_1980, :Δt)(Δt)]./3600.0)
+        deg2rad.([Polynomial(l0_1980...)(Δt), Polynomial(l1_1980...)(Δt),
+                  Polynomial( F_1980...)(Δt), Polynomial( D_1980...)(Δt),
+                  Polynomial( Ω_1980...)(Δt)]./3600.0)
 
     ln = vcat([t.n' for t in iau_1980_nutation_series]...)
     la = vcat([t.a' for t in iau_1980_nutation_series]...)
@@ -54,7 +54,7 @@ function iau_1980_obliquity(date::AbstractFloat)
     
     Δt = (date - JD2000)/(100*DAYPERYEAR)
 
-    ϵ = deg2rad(1/3600)*Polynomial(ϵ_1980, :Δt)(Δt)
+    ϵ = deg2rad(1/3600)*Polynomial(ϵ_1980...)(Δt)
 end
 
 """
@@ -81,12 +81,12 @@ function iau_1976_precession(date1::AbstractFloat, date2::AbstractFloat)
     ΔT = (date1 - JD2000)/(100*DAYPERYEAR)
     Δt = (date2 - date1)/(100*DAYPERYEAR)
 
-    ζ = Polynomial([0., Polynomial(ζT_1976, :ΔT)(ΔT),
-                     Polynomial(ζA_1976[1:2], :ΔT)(ΔT), ζA_1976[3]], :Δt)(Δt)
-    z = Polynomial([0., Polynomial(ζT_1976, :ΔT)(ΔT),
-                     Polynomial(zA_1976[1:2], :ΔT)(ΔT), zA_1976[3]], :Δt)(Δt)
-    θ = Polynomial([0., Polynomial(θT_1976, :ΔT)(ΔT),
-                     Polynomial(θA_1976[1:2], :ΔT)(ΔT), θA_1976[3]], :Δt)(Δt)
+    ζ = Polynomial([0., Polynomial(ζT_1976...)(ΔT),
+                     Polynomial(ζA_1976[1:2]...)(ΔT), ζA_1976[3]]...)(Δt)
+    z = Polynomial([0., Polynomial(ζT_1976...)(ΔT),
+                     Polynomial(zA_1976[1:2]...)(ΔT), zA_1976[3]]...)(Δt)
+    θ = Polynomial([0., Polynomial(θT_1976...)(ΔT),
+                     Polynomial(θA_1976[1:2]...)(ΔT), θA_1976[3]]...)(Δt)
 
     deg2rad(1/3600).*(ζ, z, θ)
 end

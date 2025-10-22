@@ -1,7 +1,7 @@
 #### Astronomy / Horizontal-Equatorial
 
 """
-    ae2hd(azimuth::Float64, altitude::Float64, latitude::Float64)
+    ae2hd(azimuth::AbstractFloat, altitude::AbstractFloat, latitude::AbstractFloat)
 
 Horizon to equatorial coordinates. Transform azimuth and altitude to
 hour angle and declination
@@ -53,7 +53,7 @@ hour angle and declination
 
 8) Again for efficiency, no range checking of arguments is carried out.
 """
-function ae2hd(azimuth::Float64, altitude::Float64, latitude::Float64)
+function ae2hd(azimuth::AbstractFloat, altitude::AbstractFloat, latitude::AbstractFloat)
     sa, ca = sincos(azimuth)
     se, ce = sincos(altitude)
     sp, cp = sincos(latitude)
@@ -64,7 +64,7 @@ function ae2hd(azimuth::Float64, altitude::Float64, latitude::Float64)
 end
 
 """
-    hd2ae(HA::Float64, Dec::Float64, ϕ::Float64)
+    hd2ae(HA::AbstractFloat, Dec::AbstractFloat, ϕ::AbstractFloat)
 
 Equatorial to horizon coordinates: transform hour angle and
 declination to azimuth and altitude.
@@ -115,7 +115,7 @@ declination to azimuth and altitude.
 
 7) Again for efficiency, no range checking of arguments is carried out.
 """
-function hd2ae(HA::Float64, Dec::Float64, ϕ::Float64)
+function hd2ae(HA::AbstractFloat, Dec::AbstractFloat, ϕ::AbstractFloat)
     sh, ch = sincos(HA)
     sd, cd = sincos(Dec)
     sp, cp = sincos(ϕ)
@@ -126,7 +126,7 @@ function hd2ae(HA::Float64, Dec::Float64, ϕ::Float64)
 end
 
 """
-    hd2pa(HA::Float64, Dec::Float64, latitude::Float64)
+    hd2pa(HA::AbstractFloat, Dec::AbstractFloat, latitude::AbstractFloat)
 
 Parallactic angle for a given hour angle and declination.
 
@@ -168,7 +168,7 @@ Parallactic angle for a given hour angle and declination.
 Smart, W.M., "Spherical Astronomy", Cambridge University Press, 6th
 edition (Green, 1977), p49.
 """
-function hd2pa(HA::Float64, Dec::Float64, latitude::Float64)
+function hd2pa(HA::AbstractFloat, Dec::AbstractFloat, latitude::AbstractFloat)
     sqsz = cos(latitude)*sin(HA)
     cqsz = sin(latitude)*cos(Dec) - cos(latitude)*sin(Dec)*cos(HA)
     sqsz != 0.0 || cqsz || 0.0 ? atan(sqsz, cqsz) : 0.0

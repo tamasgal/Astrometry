@@ -5,15 +5,15 @@ const ψ_2000B_planet = -0.135
 const ϵ_2000B_planet =  0.388
 
 # Mean anomaly of the Sun in 0.1 μas
-const l1_2000B = [1287104.79305, 129596581.0481]
+const l1_2000B = (1287104.79305, 129596581.0481)
 # Mean elongation of the Moon from the Sun in 0.1 μas
-const D_2000B = [1072260.70369, 1602961601.2090]
+const D_2000B = (1072260.70369, 1602961601.2090)
 # Mean anomaly of the Moon in 0.1 μas
-const l0_2000B = [485868.249036, 1717915923.2178]
+const l0_2000B = (485868.249036, 1717915923.2178)
 # Mean argument of the latitude of the Moon in 0.1 μas
-const F_2000B = [335779.526232, 1739527262.8478]
+const F_2000B = (335779.526232, 1739527262.8478)
 # Mean longitude of the ascending node of the Moon in 0.1 μas
-const Ω_2000B = [450160.398036, -6962890.5431]
+const Ω_2000B = (450160.398036, -6962890.5431)
 
 # Possibly iau_2000B_lunisolar_nutation_series = iau_2000a_lunisolar_nutation_series[1:77]
 const iau_2000B_nutation_lunisolar_series = [

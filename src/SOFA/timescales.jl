@@ -1,7 +1,7 @@
 #### Astronomy / Time Scales
 
 """ 
-    d2dtf(scale::String, ndp::Int, day1::Float64, day2::Float64)
+    d2dtf(scale::AbstractString, ndp::Int, day1::AbstractFloat, day2::AbstractFloat)
 
 Format for output a 2-part Julian Date (or in the case of UTC a
 quasi-JD form that includes special provision for leap seconds).
@@ -58,7 +58,7 @@ quasi-JD form that includes special provision for leap seconds).
 
 6) For calendar conventions and limitations, see cal2jd.
 """
-function d2dtf(scale::String, ndp::Int, day1::Float64, day2::Float64)
+function d2dtf(scale::AbstractString, ndp::Int, day1::AbstractFloat, day2::AbstractFloat)
     leap = false
 
     # Provisional calendar date.
@@ -109,7 +109,7 @@ function d2dtf(scale::String, ndp::Int, day1::Float64, day2::Float64)
 end
 
 """
-    dat(year::Integer, month::Integer, day::Integer, subday::Float64)
+    dat(year::Integer, month::Integer, day::Integer, subday::AbstractFloat)
 
 For a given UTC date, calculate Δ(AT) = TAI-UTC.
 
@@ -175,13 +175,13 @@ For a given UTC date, calculate Δ(AT) = TAI-UTC.
 2) The 5ms timestep at 1961 January 1 is taken from 2.58.1 (p87) of
    the 1992 Explanatory Supplement.
 """
-function dat(year::Integer, month::Integer, day::Integer, subday::Float64)
+function dat(year::Integer, month::Integer, day::Integer, subday::AbstractFloat)
 
     @assert 0.0 <= subday <= 1.0 "Fractional day out of range [0-1]."
     @assert year >= DRIFTSECOND[1].year "UTC date is out of range [$(DRIFTSECOND[1].year)-present]."
     if (year > 2021 + 5) @warn "UTC date $year-$month-$day is suspect." end
 
-    Δt::Float64 = 0.0
+    Δt = typeof(subday)(0.0)
     if year < 1972
         # Find drift offset
         for drift in reverse(DRIFTSECOND)
@@ -204,8 +204,8 @@ function dat(year::Integer, month::Integer, day::Integer, subday::Float64)
 end
 
 """
-    dtdb(day1::Float64, day2::Float64, ut1::Float64, eastlon::Float64,
-         u::Float64, v::Float64)
+    dtdb(day1::AbstractFloat, day2::AbstractFloat, ut1::AbstractFloat, eastlon::AbstractFloat,
+         u::AbstractFloat, v::AbstractFloat)
 
 An approximation to TDB-TT, the difference between barycentric
 dynamical time and terrestrial time, for an observer on the Earth.
@@ -357,8 +357,8 @@ Almanac, Chapter 2, University Science Books (1992).
 Simon, J.L., Bretagnon, P., Chapront, J., Chapront-Touze, M., Francou,
 G. & Laskar, J., Astron.Astrophys., 282, 663-683 (1994).
 """
-function dtdb(day1::Float64, day2::Float64, ut1::Float64, eastlon::Float64,
-              u::Float64, v::Float64)
+function dtdb(day1::AbstractFloat, day2::AbstractFloat, ut1::AbstractFloat, eastlon::AbstractFloat,
+              u::AbstractFloat, v::AbstractFloat)
     #  Time since J2000.0 in Julian millenia.
     Δt = ((day1 - JD2000) + day2)/(1000*DAYPERYEAR)
 
@@ -366,14 +366,14 @@ function dtdb(day1::Float64, day2::Float64, ut1::Float64, eastlon::Float64,
     tsol = 2pi*rem(ut1, 1) + eastlon
 
     #  Fundamental arguments (Simon et al. 1994)
-    ϵsun  = deg2rad(rem(Polynomial(ϵsun_1994, :Δt)(Δt/3600), 360))
-    ϵmsun = deg2rad(rem(Polynomial(ϵmsun_1994, :Δt)(Δt/3600), 360))
-    D     = deg2rad(rem(Polynomial(D_1994, :Δt)(Δt/3600), 360))
-    ϵju   = deg2rad(rem(Polynomial(ϵju_1994, :Δt)(Δt/3600), 360))
-    ϵsa   = deg2rad(rem(Polynomial(ϵsa_1994, :Δt)(Δt/3600), 360))
+    ϵsun  = deg2rad(rem(Polynomial(ϵsun_1994...)(Δt/3600), 360))
+    ϵmsun = deg2rad(rem(Polynomial(ϵmsun_1994...)(Δt/3600), 360))
+    D     = deg2rad(rem(Polynomial(D_1994...)(Δt/3600), 360))
+    ϵju   = deg2rad(rem(Polynomial(ϵju_1994...)(Δt/3600), 360))
+    ϵsa   = deg2rad(rem(Polynomial(ϵsa_1994...)(Δt/3600), 360))
 
     #  Topocentric terms: Moyer 1981 and Murray 1983
-    wt = sum(topo_1994 .* [
+    wt = sum(topo_1994 .* SVector(
         u * sin(tsol + ϵsun - ϵsa),
         u * sin(tsol - 2*ϵmsun),
         u * sin(tsol - D),
@@ -383,21 +383,21 @@ function dtdb(day1::Float64, day2::Float64, ut1::Float64, eastlon::Float64,
         u * sin(tsol - ϵmsun),
         u * sin(tsol + 2*ϵsun),
         v * cos(ϵsun),
-        u * sin(tsol)])
+        u * sin(tsol)))
 
     #  Fairhead et al. model
     
-    wf = Polynomial([
+    wf = Polynomial(SVector(
         sum(tdb_tt_2003_0[1,:] .*
-            sin.(tdb_tt_2003_0[3,:] .+ tdb_tt_2003_0[2,:].*Δt))
+            sin.(tdb_tt_2003_0[3,:] .+ tdb_tt_2003_0[2,:].*Δt)),
         sum(tdb_tt_2003_1[1,:] .*
-            sin.(tdb_tt_2003_1[3,:] .+ tdb_tt_2003_1[2,:].*Δt))
+            sin.(tdb_tt_2003_1[3,:] .+ tdb_tt_2003_1[2,:].*Δt)),
         sum(tdb_tt_2003_2[1,:] .*
-            sin.(tdb_tt_2003_2[3,:] .+ tdb_tt_2003_2[2,:].*Δt))
+            sin.(tdb_tt_2003_2[3,:] .+ tdb_tt_2003_2[2,:].*Δt)),
         sum(tdb_tt_2003_3[1,:] .*
-            sin.(tdb_tt_2003_3[3,:] .+ tdb_tt_2003_3[2,:].*Δt))
+            sin.(tdb_tt_2003_3[3,:] .+ tdb_tt_2003_3[2,:].*Δt)),
         sum(tdb_tt_2003_4[1,:] .*
-            sin.(tdb_tt_2003_4[3,:] .+ tdb_tt_2003_4[2,:].*Δt))], :Δt)(Δt)
+            sin.(tdb_tt_2003_4[3,:] .+ tdb_tt_2003_4[2,:].*Δt)))...)(Δt)
     
     wj = sum(mass_plan_1994_0[1,:] .*
              sin.(mass_plan_1994_0[3,:] .+ mass_plan_1994_0[2,:].*Δt)) +
@@ -407,8 +407,8 @@ function dtdb(day1::Float64, day2::Float64, ut1::Float64, eastlon::Float64,
 end
 
 """
-    dtf2d(scale::String, year::Int, month::Int, day::Int, hour::Int,
-          minute::Int, second::Float64)
+    dtf2d(scale::AbstractString, year::Int, month::Int, day::Int, hour::Int,
+          minute::Int, second::AbstractFloat)
 
 Encode date and time fields into 2-part Julian Date (or in the case of
 UTC a quasi-JD form that includes special provision for leap seconds).
@@ -468,8 +468,8 @@ UTC a quasi-JD form that includes special provision for leap seconds).
    with circumspection; in particular the difference between two such
    results cannot be interpreted as a precise time interval.
 """
-function dtf2d(scale::String, year::Int, month::Int, day::Int, hour::Int,
-               minute::Int, second::Float64)
+function dtf2d(scale::AbstractString, year::Int, month::Int, day::Int, hour::Int,
+               minute::Int, second::AbstractFloat)
     # Today's Julian Day number
     julday = sum(cal2jd(year, month, day))
 
@@ -502,7 +502,7 @@ function dtf2d(scale::String, year::Int, month::Int, day::Int, hour::Int,
 end
 
 """
-    taitt(day1::Float64, day2::Float64)
+    taitt(day1::AbstractFloat, day2::AbstractFloat)
 
 Time scale transformation: International Atomic Time, TAI, to
 Terrestrial Time, TT.
@@ -532,13 +532,13 @@ Terrestrial Time, TT.
 2) Explanatory Supplement to the Astronomical Almanac, P. Kenneth
    Seidelmann (ed), University Science Books (1992)
 """
-function taitt(day1::Float64, day2::Float64)
+function taitt(day1::AbstractFloat, day2::AbstractFloat)
     abs(day1) > abs(day2) ? (day = day1, fraction = day2 + TT_MINUS_TAI/SECPERDAY) :
         (day = day1 + TT_MINUS_TAI/SECPERDAY, fraction = day2)
 end
 
 """
-    taiut1(day1::Float64, day2::Float64, Δt::Float64)
+    taiut1(day1::AbstractFloat, day2::AbstractFloat, Δt::AbstractFloat)
 
 Time scale transformation: International Atomic Time, TAI, to
 Universal Time, UT1.
@@ -569,13 +569,13 @@ Universal Time, UT1.
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992)
 """
-function taiut1(day1::Float64, day2::Float64, Δt::Float64)
+function taiut1(day1::AbstractFloat, day2::AbstractFloat, Δt::AbstractFloat)
     abs(day1) > abs(day2) ? (day = day1, fraction = day2 + Δt/SECPERDAY) :
         (day = day1 + Δt/SECPERDAY, fraction = day2)
 end
 
 """
-    taiutc(day1::Float64, day2::Float64)
+    taiutc(day1::AbstractFloat, day2::AbstractFloat)
 
 Time scale transformation: International Atomic Time, TAI, to
 Coordinated Universal Time, UTC.
@@ -622,7 +622,7 @@ Technical Note No. 32, BKG (2004)
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992)
 """
-function taiutc(day1::Float64, day2::Float64)
+function taiutc(day1::AbstractFloat, day2::AbstractFloat)
     utc1, utc2 = tai1, tai2 = abs(day1) >= abs(day2) ? (day1, day2) : (day2, day1)
 
     for j=1:3
@@ -633,7 +633,7 @@ function taiutc(day1::Float64, day2::Float64)
 end
 
 """
-    tcbtdb(day1::Float64, day2::Float64)
+    tcbtdb(day1::AbstractFloat, day2::AbstractFloat)
 
 Time scale transformation: Barycentric Coordinate Time, TCB, to
 Barycentric Dynamical Time, TDB.
@@ -676,7 +676,7 @@ Barycentric Dynamical Time, TDB.
 
 IAU 2006 Resolution B3
 """
-function tcbtdb(day1::Float64, day2::Float64)
+function tcbtdb(day1::AbstractFloat, day2::AbstractFloat)
     abs(day1) > abs(day2) ?
         (day = day1, fraction = day2 + TDB0/SECPERDAY -
          ELB*((day1 - MJD0 - MJD77) + (day2 - TT_MINUS_TAI/SECPERDAY))) :
@@ -686,7 +686,7 @@ function tcbtdb(day1::Float64, day2::Float64)
 end
 
 """
-    tcgtt(day1::Float64, day2::Float64)
+    tcgtt(day1::AbstractFloat, day2::AbstractFloat)
 
 Time scale transformation: Geocentric Coordinate Time, TCG, to
 Terrestrial Time, TT.
@@ -715,7 +715,7 @@ Technical Note No. 32, BKG (2004)
 
 IAU 2000 Resolution B1.9
 """
-function tcgtt(day1::Float64, day2::Float64)
+function tcgtt(day1::AbstractFloat, day2::AbstractFloat)
     abs(day1) > abs(day2) ?
         (day = day1, fraction = day2 -
         ELG*((day1 - MJD0) + (day2 - MJD77 - TT_MINUS_TAI/SECPERDAY))) :
@@ -725,7 +725,7 @@ function tcgtt(day1::Float64, day2::Float64)
 end
 
 """
-    tdbtcb(day1::Float64, day2::Float64)
+    tdbtcb(day1::AbstractFloat, day2::AbstractFloat)
 
 Time scale transformation: Barycentric Dynamical Time, TDB, to
 Barycentric Coordinate Time, TCB.
@@ -768,7 +768,7 @@ Barycentric Coordinate Time, TCB.
 
 IAU 2006 Resolution B3
 """
-function tdbtcb(day1::Float64, day2::Float64)
+function tdbtcb(day1::AbstractFloat, day2::AbstractFloat)
     abs(day1) > abs(day2) ?
         (day = day1, fraction = day2 - TDB0/SECPERDAY -
         ELB/(1.0 - ELB)*((MJD0 + MJD77 - day1) -
@@ -780,7 +780,7 @@ function tdbtcb(day1::Float64, day2::Float64)
 end
 
 """
-    tdbtt(day1::Float64, day2::Float64, dtr::Float64)
+    tdbtt(day1::AbstractFloat, day2::AbstractFloat, dtr::AbstractFloat)
 
 Time scale transformation: Barycentric Dynamical Time, TDB, to
 Terrestrial Time, TT.
@@ -821,13 +821,13 @@ Technical Note No. 32, BKG (2004)
 
 IAU 2006 Resolution 3
 """
-function tdbtt(day1::Float64, day2::Float64, dtr::Float64)
+function tdbtt(day1::AbstractFloat, day2::AbstractFloat, dtr::AbstractFloat)
     abs(day1) > abs(day2) ? (day = day1, fraction = day2 - dtr/SECPERDAY) :
         (day = day1 - dtr/SECPERDAY, fraction = day2)
 end
 
 """
-    tttai(day1::Float64, day2::Float64)
+    tttai(day1::AbstractFloat, day2::AbstractFloat)
 
 Time scale transformation: Terrestrial Time, TT, to International
 Atomic Time, TAI.
@@ -857,14 +857,14 @@ Technical Note No. 32, BKG (2004)
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992)
 """
-function tttai(day1::Float64, day2::Float64)
+function tttai(day1::AbstractFloat, day2::AbstractFloat)
     abs(day1) > abs(day2) ?
         (day = day1, frcation = day2 - TT_MINUS_TAI/SECPERDAY) :
         (day = day1 - TT_MINUS_TAI/SECPERDAY, fraction = day2)
 end
 
 """
-    tttcg(day1::Float64, day2::Float64)
+    tttcg(day1::AbstractFloat, day2::AbstractFloat)
 
 Time scale transformation: Terrestrial Time, TT, to Geocentric
 Coordinate Time, TCG.
@@ -893,7 +893,7 @@ Technical Note No. 32, BKG (2004)
 
 IAU 2000 Resolution B1.9
 """
-function tttcg(day1::Float64, day2::Float64)
+function tttcg(day1::AbstractFloat, day2::AbstractFloat)
     abs(day1) > abs(day2) ?
         (day = day1, fraction = day2 +
         ELG/(1.0 - ELG)*((day1 - MJD0) +
@@ -905,7 +905,7 @@ function tttcg(day1::Float64, day2::Float64)
 end
 
 """
-    tttdb(day1::Float64, day2::Float64, dtr::Float64)
+    tttdb(day1::AbstractFloat, day2::AbstractFloat, dtr::AbstractFloat)
 
 Time scale transformation: Terrestrial Time, TT, to Barycentric
 Dynamical Time, TDB.
@@ -946,14 +946,14 @@ Technical Note No. 32, BKG (2004)
 
 IAU 2006 Resolution 3
 """
-function tttdb(day1::Float64, day2::Float64, dtr::Float64)
+function tttdb(day1::AbstractFloat, day2::AbstractFloat, dtr::AbstractFloat)
     abs(day1) > abs(day2) ?
         (day = day1, fraction = day2 + dtr/SECPERDAY) :
         (day = day1 + dtr/SECPERDAY, fraction = day2)
 end
 
 """
-    ttut1(day1::Float64, day2::Float64, dt::Float64)
+    ttut1(day1::AbstractFloat, day2::AbstractFloat, dt::AbstractFloat)
 
 Time scale transformation: Terrestrial Time, TT, to Universal Time,
 UT1.
@@ -983,14 +983,14 @@ UT1.
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992)
 """
-function ttut1(day1::Float64, day2::Float64, dt::Float64)
+function ttut1(day1::AbstractFloat, day2::AbstractFloat, dt::AbstractFloat)
     abs(day1) > abs(day2) ?
         (day = day1, fraction = day2 - dt/SECPERDAY) :
         (day = day1 - dt/SECPERDAY, fraction = day2)
 end
 
 """
-    ut1tai(day1::Float64, day2::Float64, dta::Float64)
+    ut1tai(day1::AbstractFloat, day2::AbstractFloat, dta::AbstractFloat)
 
 Time scale transformation: Universal Time, UT1, to International
 Atomic Time, TAI.
@@ -1021,14 +1021,14 @@ Atomic Time, TAI.
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992)
 """
-function ut1tai(day1::Float64, day2::Float64, dta::Float64)
+function ut1tai(day1::AbstractFloat, day2::AbstractFloat, dta::AbstractFloat)
     abs(day1) > abs(day2) ?
         (day = day1, fraction = day2 - dta/SECPERDAY) :
         (day = day1 - dta/SECPERDAY, fraction = day2)
 end
 
 """
-    ut1tt(day1::Float64, day2::Float64, dt::Float64)
+    ut1tt(day1::AbstractFloat, day2::AbstractFloat, dt::AbstractFloat)
 
 Time scale transformation: Universal Time, UT1, to Terrestrial Time,
 TT.
@@ -1058,14 +1058,14 @@ TT.
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992)
 """
-function ut1tt(day1::Float64, day2::Float64, dt::Float64)
+function ut1tt(day1::AbstractFloat, day2::AbstractFloat, dt::AbstractFloat)
     abs(day1) > abs(day2) ?
         (day = day1, fraction = day2 + dt/SECPERDAY) :
         (day = day1 + dt/SECPERDAY, fraction = day2)
 end
 
 """
-    ut1utc(day1::Float64, day2::Float64, duts::Float64)
+    ut1utc(day1::AbstractFloat, day2::AbstractFloat, duts::AbstractFloat)
 
 Time scale transformation: Universal Time, UT1, to Coordinated
 Universal Time, UTC.
@@ -1116,7 +1116,7 @@ Technical Note No. 32, BKG (2004)
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992)
 """
-function ut1utc(day1::Float64, day2::Float64, duts::Float64)
+function ut1utc(day1::AbstractFloat, day2::AbstractFloat, duts::AbstractFloat)
     #  See if the UT1 can possibly be in a leap-second day
     utc1, utc2 = abs(day1) >= abs(day2) ? (day1, day2) : (day2, day1)
     day1, dats1 = utc1, 0.0
@@ -1153,7 +1153,7 @@ function ut1utc(day1::Float64, day2::Float64, duts::Float64)
 end
 
 """
-    utctai(day1::Float64, day2::Float64)
+    utctai(day1::AbstractFloat, day2::AbstractFloat)
 
 Time scale transformation: Coordinated Universal Time, UTC, to
 International Atomic Time, TAI.
@@ -1201,7 +1201,7 @@ Technical Note No. 32, BKG (2004)
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992)
 """
-function utctai(day1::Float64, day2::Float64)
+function utctai(day1::AbstractFloat, day2::AbstractFloat)
 
     utc1, utc2 = abs(day1) >= abs(day2) ? (day1, day2) : (day2, day1)
     year, month, day, frac = jd2cal(utc1, utc2)
@@ -1234,7 +1234,7 @@ function utctai(day1::Float64, day2::Float64)
 end
 
 """
-    utcut1(day1::Float64, day2::Float64, dut1::Float64)
+    utcut1(day1::AbstractFloat, day2::AbstractFloat, dut1::AbstractFloat)
 
 Time scale transformation: Coordinated Universal Time, UTC, to
 Universal Time, UT1.
@@ -1285,7 +1285,7 @@ Technical Note No. 32, BKG (2004)
 Explanatory Supplement to the Astronomical Almanac, P. Kenneth
 Seidelmann (ed), University Science Books (1992)
 """
-function utcut1(day1::Float64, day2::Float64, dut1::Float64)
+function utcut1(day1::AbstractFloat, day2::AbstractFloat, dut1::AbstractFloat)
     
     #  Loop up TAI-UTC.
     year, month, day, frac = jd2cal(day1, day2)

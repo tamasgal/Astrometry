@@ -4,9 +4,9 @@
 struct Driftsecond
     year::Integer
     month::Integer
-    mjd::Float64
-    offset::Float64
-    rate::Float64
+    mjd::Real
+    offset::Real
+    rate::Real
 end
 
 """
@@ -15,30 +15,30 @@ end
 struct Leapsecond
     year::Integer
     month::Integer
-    second::Float64
+    second::Real
 end
 
 """
     Star independent astrometry parameters
 """
 struct Astrom
-    pmt::Float64          # proper motion time interval (SSB, Julian years)
-    eb::Vector{Float64}  # SSB to observer (vector, AU)
-    eh::Vector{Float64}  # Sun to observer (vector, unit)
-    em::Float64          # distance from Sun to observer (AU)
-    v::Vector{Float64}   # barycentric observer velocity (vector, c)
-    bm1::Float64         # inverse Lorenz factor, i.e., sqrt(1-v^2) 
-    bpn::Matrix{Float64} # bias-precesson-nutation matrix
-    along::Float64       # longitude + s' + dERA(DUT) (radians)
-    phi::Float64         # geodetic latitude (radians)
-    xpl::Float64         # polar motion xp wrt local meridian (radians)
-    ypl::Float64         # polar motion yp wrt local meridian (radians)
-    sphi::Float64        # sine of geodetic latitude
-    cphi::Float64        # cosine of geodetic latitude
-    diurab::Float64      # magnitude of diurnal aberration vector
-    eral::Float64        # `local` Earth rotation angle (radians)
-    refa::Float64        # refraction constant A (radians)
-    refb::Float64        # refraction constant B (radians)
+    pmt::AbstractFloat                  # proper motion time interval (SSB, Julian years)
+    eb::AbstractVector{<:Real}          # SSB to observer (vector, AU)
+    eh::AbstractVector{<:Real}          # Sun to observer (vector, unit)
+    em::AbstractFloat                   # distance from Sun to observer (AU)
+    v::AbstractVector{<:Real}           # barycentric observer velocity (vector, c)
+    bm1::AbstractFloat                  # inverse Lorenz factor, i.e., sqrt(1-v^2) 
+    bpn::AbstractMatrix{<:Real}         # bias-precesson-nutation matrix
+    along::AbstractFloat                # longitude + s' + dERA(DUT) (radians)
+    phi::AbstractFloat                  # geodetic latitude (radians)
+    xpl::AbstractFloat                  # polar motion xp wrt local meridian (radians)
+    ypl::AbstractFloat                  # polar motion yp wrt local meridian (radians)
+    sphi::AbstractFloat                 # sine of geodetic latitude
+    cphi::AbstractFloat                 # cosine of geodetic latitude
+    diurab::AbstractFloat               # magnitude of diurnal aberration vector
+    eral::AbstractFloat                 # `local` Earth rotation angle (radians)
+    refa::AbstractFloat                 # refraction constant A (radians)
+    refb::AbstractFloat                 # refraction constant B (radians)
 end
 
 function Astrom()
@@ -54,9 +54,9 @@ end
     Body parameters for light deflection
 """
 struct Ldbody
-    bm::Float64                   #  mass of the body (solar masses)
-    dl::Float64                   #  deflection limiter (radians^2/2)
-    pv::Vector{Vector{Float64}}   #  barycentric PV of the body (AU, AU/day)
+    bm::AbstractFloat                   #  mass of the body (solar masses)
+    dl::AbstractFloat                   #  deflection limiter (radians^2/2)
+    pv::AbstractVector{AbstractVector{Real}}  #  barycentric PV of the body (AU, AU/day)
 end
 
 const TINY = 1e-6
@@ -108,6 +108,23 @@ const LEAPSECOND =
      Leapsecond(2012,  7, 35.0),
      Leapsecond(2015,  7, 36.0),
      Leapsecond(2017,  1, 37.0)]
+
+include("constants.jl")
+include("util.jl")
+include("constants1980.jl")
+include("constants2000.jl")
+include("constants2000A.jl")
+include("constants2000B.jl")
+include("constants2006.jl")
+include("constants2006F.jl")
+include("constants2011.jl")
+include("constantsHipparcos.jl")
+include("constantsFK4toFK5.jl")
+include("constantsplanet.jl")
+
+include("ephemerisDE405.jl")
+using ..Astrometry: ephem_position
+using ..Astrometry: ephem_velocity
 
 include("SOFA/calendars.jl")
 include("SOFA/astrometry.jl")
